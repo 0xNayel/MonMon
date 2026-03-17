@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/models"
 )
 
 func (s *Server) handleListLogs(c *gin.Context) {

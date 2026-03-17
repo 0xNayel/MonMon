@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/models"
 )
 
 // EndpointMonitor implements Monitor for HTTP endpoint checks.

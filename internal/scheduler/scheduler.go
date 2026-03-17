@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/monmon-io/monmon/internal/alert"
-	"github.com/monmon-io/monmon/internal/diff"
-	"github.com/monmon-io/monmon/internal/logger"
-	"github.com/monmon-io/monmon/internal/models"
-	"github.com/monmon-io/monmon/internal/monitor"
+	"github.com/0xNayel/MonMon/internal/alert"
+	"github.com/0xNayel/MonMon/internal/diff"
+	"github.com/0xNayel/MonMon/internal/logger"
+	"github.com/0xNayel/MonMon/internal/models"
+	"github.com/0xNayel/MonMon/internal/monitor"
 	"github.com/robfig/cron/v3"
 	"gorm.io/gorm"
 )

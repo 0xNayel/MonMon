@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/models"
 	"github.com/projectdiscovery/notify/pkg/providers"
 	"github.com/projectdiscovery/notify/pkg/types"
 	"gopkg.in/yaml.v3"

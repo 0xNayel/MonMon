@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/models"
 )
 
 // SubdomainMonitor discovers and monitors subdomains using subfinder and httpx.

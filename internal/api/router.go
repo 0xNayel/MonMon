@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/monmon-io/monmon/internal/auth"
-	"github.com/monmon-io/monmon/internal/logger"
-	"github.com/monmon-io/monmon/internal/scheduler"
-	"github.com/monmon-io/monmon/internal/webui"
+	"github.com/0xNayel/MonMon/internal/auth"
+	"github.com/0xNayel/MonMon/internal/logger"
+	"github.com/0xNayel/MonMon/internal/scheduler"
+	"github.com/0xNayel/MonMon/internal/webui"
 	"gorm.io/gorm"
 )
 

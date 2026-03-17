@@ -10,8 +10,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/monmon-io/monmon/internal/config"
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/config"
+	"github.com/0xNayel/MonMon/internal/models"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/yaml.v3"
 	"gorm.io/gorm"

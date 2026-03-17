@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/models"
 )
 
 // CommandMonitor executes shell commands and captures their output.

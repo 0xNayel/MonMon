@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/models"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
 )

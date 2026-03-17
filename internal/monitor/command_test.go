@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/models"
 )
 
 func TestCommandMonitor_SimpleEcho(t *testing.T) {

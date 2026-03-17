@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/monmon-io/monmon/internal/diff"
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/diff"
+	"github.com/0xNayel/MonMon/internal/models"
 )
 
 func (s *Server) handleListChecks(c *gin.Context) {

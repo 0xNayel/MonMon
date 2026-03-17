@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/models"
 )
 
 // BbscopeMonitor monitors bug bounty program scope using bbscope.

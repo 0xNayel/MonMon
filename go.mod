@@ -1,4 +1,4 @@
-module github.com/monmon-io/monmon
+module github.com/0xNayel/MonMon
 
 go 1.25.0
 

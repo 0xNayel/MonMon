@@ -3,7 +3,7 @@ package monitor
 import (
 	"context"
 
-	"github.com/monmon-io/monmon/internal/models"
+	"github.com/0xNayel/MonMon/internal/models"
 )
 
 // Monitor is the interface all monitoring engines must implement.
