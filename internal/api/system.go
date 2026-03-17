@@ -1,0 +1,48 @@
+package api
+
+import (
+	"net/http"
+	"os/exec"
+
+	"github.com/gin-gonic/gin"
+)
+
+type toolEntry struct {
+	Name       string   `json:"name"`
+	Found      bool     `json:"found"`
+	Path       string   `json:"path"`
+	RequiredBy []string `json:"required_by"`
+}
+
+func (s *Server) handleToolsCheck(c *gin.Context) {
+	candidates := []struct {
+		name       string
+		requiredBy []string
+	}{
+		{"subfinder", []string{"subdomain"}},
+		{"httpx", []string{"subdomain"}},
+		{"bbscope", []string{"bbscope"}},
+	}
+
+	tools := make([]toolEntry, 0, len(candidates))
+	allOK := true
+
+	for _, tc := range candidates {
+		path, err := exec.LookPath(tc.name)
+		found := err == nil
+		if !found {
+			allOK = false
+		}
+		tools = append(tools, toolEntry{
+			Name:       tc.name,
+			Found:      found,
+			Path:       path,
+			RequiredBy: tc.requiredBy,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"tools":  tools,
+		"all_ok": allOK,
+	})
+}

@@ -1,0 +1,27 @@
+[Unit]
+Description=MonMon - Monitoring Monster
+Documentation=https://github.com/monmon-io/monmon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=monmon
+Group=monmon
+ExecStart=/usr/local/bin/monmon server -c /etc/monmon/monmon.yaml
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65535
+
+WorkingDirectory=/var/lib/monmon
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=monmon
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/monmon /etc/monmon
+
+[Install]
+WantedBy=multi-user.target

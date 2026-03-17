@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+database:
+  path: "./data/monmon.db"
+
+auth:
+  jwt_secret: ""                    # auto-generated if empty
+  credentials_file: "./configs/credentials.yaml"
+
+notify:
+  provider_config: "./configs/notify-provider.yaml"
+
+logging:
+  level: "info"                     # debug / info / warn / error
+  file: "./data/monmon.log"
+
+retention:
+  default_keep: 0                   # 0 = keep all, N = keep last N checks
+  cleanup_interval: "1h"
+
+tools:
+  subfinder: "subfinder"
+  httpx: "httpx"

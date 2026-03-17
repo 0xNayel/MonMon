@@ -1,0 +1,10 @@
+/monmon
+/monmon.exe
+data/
+*.db
+*.log
+configs/credentials.yaml
+configs/notify-provider.yaml
+web/node_modules/
+web/dist/
+.env

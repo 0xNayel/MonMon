@@ -1,0 +1,31 @@
+# ProjectDiscovery Notify provider configuration
+# See: https://github.com/projectdiscovery/notify
+
+slack:
+  - id: "slack-alerts"
+    slack_channel: "monmon-alerts"
+    slack_username: "MonMon"
+    slack_format: "{{data}}"
+    slack_webhook_url: "https://hooks.slack.com/services/XXXX/YYYY/ZZZZ"
+
+discord:
+  - id: "discord-alerts"
+    discord_channel: "monmon-alerts"
+    discord_username: "MonMon"
+    discord_format: "{{data}}"
+    discord_webhook_url: "https://discord.com/api/webhooks/XXXX/YYYY"
+
+telegram:
+  - id: "telegram-alerts"
+    telegram_api_key: "XXXX:YYYY"
+    telegram_chat_id: "123456789"
+    telegram_format: "{{data}}"
+
+# Custom webhook (generic HTTP POST)
+custom:
+  - id: "webhook"
+    custom_webhook_url: "https://your-server.com/webhook"
+    custom_method: "POST"
+    custom_format: "{{data}}"
+    custom_headers:
+      Content-Type: "application/json"

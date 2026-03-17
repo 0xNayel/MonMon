@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+:root {
+  --bg-base: #080A0E;
+  --bg-surface: #0D0F14;
+  --bg-card: rgba(255,255,255,0.04);
+  --bg-card-hover: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.08);
+  --border-subtle: rgba(255,255,255,0.04);
+  --accent: #818CF8;
+  --accent-solid: #6366F1;
+  --accent-dim: rgba(99,102,241,0.12);
+  --accent-glow: rgba(99,102,241,0.25);
+  --warn: #FFB300;
+  --warn-dim: rgba(255,179,0,0.12);
+  --critical: #FF3B5C;
+  --critical-dim: rgba(255,59,92,0.12);
+  --text-primary: #E8EAF0;
+  --text-muted: #6B7280;
+  --text-faint: #374151;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: 'Outfit', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+#root { position: relative; z-index: 1; }
+
+/* ── Animations ─────────────────────────────────────── */
+
+@keyframes cascade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+  50%       { box-shadow: 0 0 0 8px transparent; }
+}
+
+@keyframes pulse-amber {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,179,0,0.3); }
+  50%       { box-shadow: 0 0 0 6px transparent; }
+}
+
+@keyframes pulse-red {
+  0%, 100% { border-color: var(--critical); }
+  50%       { border-color: transparent; }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
+}
+
+@keyframes counter-flash-green {
+  0%   { color: var(--accent); }
+  100% { color: inherit; }
+}
+
+@keyframes counter-flash-red {
+  0%   { color: var(--critical); }
+  100% { color: inherit; }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Cascade animation (applied via JS stagger) ──── */
+.cascade { animation: cascade-in 0.4s ease-out both; }
+
+/* ── Skeleton shimmer ────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.09) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* ── Glass card ──────────────────────────────────── */
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}
+
+.glass:hover {
+  background: var(--bg-card-hover);
+}
+
+/* ── Select dropdowns ────────────────────────────── */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  color-scheme: dark;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 34px !important;
+}
+
+select option {
+  background-color: #0D0F14;
+  color: #E8EAF0;
+  font-family: 'Outfit', system-ui, sans-serif;
+}
+
+select option:checked {
+  background-color: rgba(99,102,241,0.25);
+  color: #818CF8;
+}
+
+/* ── Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+
+/* ── Diff colors ─────────────────────────────────── */
+.diff-added   { background: rgba(99,102,241,0.08); color: #818CF8; }
+.diff-removed { background: rgba(255,59,92,0.1);  color: #FF3B5C; }
+.diff-header  { color: var(--text-muted); font-style: italic; }
+
+/* ── Reduced motion ──────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

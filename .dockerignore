@@ -1,0 +1,5 @@
+web/node_modules
+data/
+*.exe
+monmon
+.git

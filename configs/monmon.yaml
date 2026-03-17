@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+database:
+  path: "/var/lib/monmon/data/monmon.db"
+
+auth:
+  jwt_secret: ""
+  credentials_file: "/etc/monmon/credentials.yaml"
+
+notify:
+  provider_config: "/etc/monmon/notify-provider.yaml"
+
+logging:
+  level: "info"
+  file: "/var/lib/monmon/data/monmon.log"
+
+retention:
+  default_keep: 0
+  cleanup_interval: "1h"
+
+tools:
+  subfinder: "subfinder"
+  httpx: "httpx"
