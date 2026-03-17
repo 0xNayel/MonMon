@@ -1,6 +1,6 @@
 [Unit]
 Description=MonMon - Monitoring Monster
-Documentation=https://github.com/monmon-io/monmon
+Documentation=https://github.com/0xNayel/MonMon
 After=network-online.target
 Wants=network-online.target
 
