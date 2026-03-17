@@ -5,7 +5,7 @@ import (
 
 	"github.com/0xNayel/MonMon/internal/config"
 	"github.com/0xNayel/MonMon/internal/models"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )

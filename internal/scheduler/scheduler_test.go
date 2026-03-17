@@ -9,7 +9,7 @@ import (
 	"github.com/0xNayel/MonMon/internal/logger"
 	"github.com/0xNayel/MonMon/internal/models"
 	"github.com/0xNayel/MonMon/internal/monitor"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 )
