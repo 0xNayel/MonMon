@@ -108,8 +108,8 @@ logging:
 		t.Fatalf("Load failed: %v", err)
 	}
 
-	if cfg.Server.Port != 8080 {
-		t.Errorf("expected default port 8080, got %d", cfg.Server.Port)
+	if cfg.Server.Port != 8888 {
+		t.Errorf("expected default port 8888, got %d", cfg.Server.Port)
 	}
 	if cfg.Logging.Level != "info" {
 		t.Errorf("expected default log level 'info', got %q", cfg.Logging.Level)

@@ -3,12 +3,12 @@ services:
     build: .
     container_name: monmon
     ports:
-      - "8888:8080"
+      - "8888:8888"
     volumes:
       - monmon-data:/var/lib/monmon/data
       - ./configs:/etc/monmon
     environment:
-      - MONMON_SERVER_PORT=8080
+      - MONMON_SERVER_PORT=8888
       - MONMON_LOGGING_LEVEL=info
       - MONMON_ADMIN_USER=${MONMON_ADMIN_USER:?Create a .env file with MONMON_ADMIN_USER=youruser}
       - MONMON_ADMIN_PASSWORD=${MONMON_ADMIN_PASSWORD:?Create a .env file with MONMON_ADMIN_PASSWORD=yourpassword}

@@ -104,7 +104,7 @@ go install github.com/0xNayel/MonMon/cmd/monmon@latest
 monmon server
 ```
 
-Requires Go 1.22+ and GCC (CGO for SQLite). Open `http://localhost:8080`.
+Requires Go 1.22+ and GCC (CGO for SQLite). Open `http://localhost:8888`.
 
 ### From Source
 
@@ -131,7 +131,7 @@ Or visit the **System** page in the web dashboard.
 
 ```yaml
 server:
-  port: 8080
+  port: 8888
 
 database:
   path: "./data/monmon.db"

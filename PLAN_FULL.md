@@ -318,7 +318,7 @@ monmon/
 ```yaml
 server:
   host: "0.0.0.0"
-  port: 8080
+  port: 8888
   mode: "release"           # debug / release
 
 database:
@@ -1271,7 +1271,7 @@ GET /api/tasks?type=endpoint&status=active&tag=production&search=api
 ```bash
 # Server
 monmon server                          # Start server (web + scheduler)
-monmon server --port 8080              # Custom port
+monmon server --port 8888              # Custom port
 monmon server --config /path/to/config # Custom config
 
 # Tasks
@@ -1983,7 +1983,7 @@ WORKDIR /app
 COPY --from=backend /app/monmon .
 COPY configs/ ./configs/
 RUN mkdir -p data/blobs data/logs
-EXPOSE 8080
+EXPOSE 8888
 ENTRYPOINT ["./monmon"]
 CMD ["server"]
 ```
@@ -1998,13 +1998,13 @@ services:
     build: .
     container_name: monmon
     ports:
-      - "8080:8080"
+      - "8888:8888"
     volumes:
       - monmon-data:/app/data           # persistent storage
       - ./configs:/app/configs           # mount config for credential reset
       - /var/run/docker.sock:/var/run/docker.sock  # optional: for container monitoring
     environment:
-      - MONMON_SERVER_PORT=8080
+      - MONMON_SERVER_PORT=8888
       - MONMON_LOG_LEVEL=info
     restart: unless-stopped
 
@@ -2036,7 +2036,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile.dev
     ports:
-      - "8080:8080"
+      - "8888:8888"
     volumes:
       - .:/app
       - monmon-data:/app/data
@@ -2071,7 +2071,7 @@ Diagram from Section 2 + data flow explanation
 ## Quick Start
   ### Docker (Recommended)
   docker-compose up -d
-  Open http://localhost:8080
+  Open http://localhost:8888
   Login: monmon / monmon
 
   ### Binary

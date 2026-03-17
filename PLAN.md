@@ -307,7 +307,7 @@ All routes (except `/api/login` and static files) require `Authorization: Bearer
 ## CLI
 
 ```bash
-monmon server                    # start foreground (default :8080)
+monmon server                    # start foreground (default :8888)
 monmon server -p 9090 -c /path/to/config.yaml
 
 # OS Service management (runs as systemd service — survives SSH logout, auto-starts on boot)
@@ -380,7 +380,7 @@ monmon version
 
 ```yaml
 server:
-  port: 8080
+  port: 8888
 
 database:
   path: "./data/monmon.db"
@@ -424,7 +424,7 @@ COPY configs/ /etc/monmon/
 # install subfinder + httpx
 RUN wget -qO- https://github.com/projectdiscovery/subfinder/releases/latest/download/subfinder_linux_amd64.zip | unzip -d /usr/local/bin/ - && \
     wget -qO- https://github.com/projectdiscovery/httpx/releases/latest/download/httpx_linux_amd64.zip | unzip -d /usr/local/bin/ -
-EXPOSE 8080
+EXPOSE 8888
 ENTRYPOINT ["monmon"]
 CMD ["server", "-c", "/etc/monmon/monmon.yaml"]
 ```
@@ -434,7 +434,7 @@ CMD ["server", "-c", "/etc/monmon/monmon.yaml"]
 services:
   monmon:
     build: .
-    ports: ["8080:8080"]
+    ports: ["8888:8888"]
     volumes:
       - monmon-data:/data
       - ./configs:/etc/monmon
@@ -576,7 +576,7 @@ monmon logs -f
 monmon logs --level error
 
 # via web dashboard
-http://server:8080 → Logs tab
+http://server:8888 → Logs tab
 ```
 
 ---

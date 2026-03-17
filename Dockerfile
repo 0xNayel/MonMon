@@ -33,7 +33,7 @@ COPY configs/credentials.yaml /etc/monmon/credentials.yaml
 RUN mkdir -p /var/lib/monmon/data
 
 WORKDIR /var/lib/monmon
-EXPOSE 8080
+EXPOSE 8888
 
 ENTRYPOINT ["monmon"]
 CMD ["server", "-c", "/etc/monmon/monmon.yaml"]

@@ -66,7 +66,7 @@ func Load(cfgFile string) (*Config, error) {
 	}
 
 	// Defaults
-	viper.SetDefault("server.port", 8080)
+	viper.SetDefault("server.port", 8888)
 	viper.SetDefault("database.path", "./data/monmon.db")
 	viper.SetDefault("auth.jwt_secret", "")
 	viper.SetDefault("auth.credentials_file", "./configs/credentials.yaml")
