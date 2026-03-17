@@ -82,8 +82,8 @@ For command, subdomain, and bbscope tasks, every new diff line is checked agains
 
 ```bash
 # 1. Clone
-git clone https://github.com/monmon-io/monmon.git
-cd monmon
+git clone https://github.com/0xNayel/MonMon.git
+cd MonMon
 
 # 2. Create .env with your admin credentials
 echo "MONMON_ADMIN_USER=admin" >> .env
@@ -97,19 +97,20 @@ Open `http://localhost:8888`.
 
 The Docker image ships with `subfinder`, `httpx`, and `bbscope` pre-installed.
 
-### Binary
+### go install
 
 ```bash
+go install github.com/0xNayel/MonMon/cmd/monmon@latest
 monmon server
 ```
 
-Open `http://localhost:8080`. Requires `subfinder` and `httpx` in PATH for subdomain tasks.
+Requires Go 1.22+ and GCC (CGO for SQLite). Open `http://localhost:8080`.
 
 ### From Source
 
 ```bash
-git clone https://github.com/monmon-io/monmon.git
-cd monmon
+git clone https://github.com/0xNayel/MonMon.git
+cd MonMon
 make build
 ./monmon server
 ```
