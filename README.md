@@ -72,7 +72,7 @@ For command, subdomain, and bbscope tasks, every new diff line is checked agains
 - JWT authentication, auto-generated secret if not set
 - `X-MonMon` fingerprint header on all API responses
 - SQLite with WAL mode — single file, zero config
-- Runs as a binary, Docker container, or OS service (systemd / launchd / Windows)
+- Runs as a binary or Docker container
 
 ---
 
@@ -104,18 +104,7 @@ go install github.com/0xNayel/MonMon/cmd/monmon@latest
 monmon server
 ```
 
-Requires Go 1.22+ and GCC (CGO for SQLite). Open `http://localhost:8888`.
-
-### From Source
-
-```bash
-git clone https://github.com/0xNayel/MonMon.git
-cd MonMon
-make build
-./monmon server
-```
-
-Requires Go 1.22+, GCC (CGO for SQLite), and Node.js (for frontend).
+Requires Go 1.22+. Open `http://localhost:8080`.
 
 ### Check Tool Dependencies
 
@@ -301,11 +290,6 @@ monmon check diff <check_id>
 # Logs
 monmon logs [-f] [--level error] [--task <id>]
 
-# OS Service
-monmon service install
-monmon service uninstall
-monmon service start / stop / restart / status
-
 # Other
 monmon config init
 monmon version
@@ -370,21 +354,13 @@ The image includes `subfinder`, `httpx`, and `bbscope` built from source — no 
 ## Building from Source
 
 ```bash
-# Build everything
+git clone https://github.com/0xNayel/MonMon.git
+cd MonMon
 make build
-
-# Development mode (hot reload)
-make dev
-
-# Tests
-make test
-
-# Install as system service
-sudo make install
-
-# Clean
-make clean
+./monmon server
 ```
+
+Requires Go 1.22+ and Node.js (for frontend rebuild).
 
 ---
 
