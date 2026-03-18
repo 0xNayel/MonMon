@@ -30,7 +30,6 @@ COPY --from=go-build /go/bin/bbscope   /usr/local/bin/bbscope
 COPY --from=go-build /go/bin/subfinder /usr/local/bin/subfinder
 COPY --from=go-build /go/bin/httpx     /usr/local/bin/httpx
 COPY configs/monmon.yaml /etc/monmon/monmon.yaml
-COPY configs/credentials.yaml /etc/monmon/credentials.yaml
 RUN mkdir -p /var/lib/monmon/data
 
 WORKDIR /var/lib/monmon

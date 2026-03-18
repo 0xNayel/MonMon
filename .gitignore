@@ -5,3 +5,5 @@ data/
 *.log
 web/node_modules/
 web/dist/
+.env
+configs/credentials.yaml
