@@ -1,6 +1,9 @@
 services:
   monmon:
-    build: .
+    # Use pre-built image from Docker Hub (recommended):
+    image: 0xnayel/monmon:latest
+    # Or build from source (uncomment below, comment out image above):
+    # build: .
     container_name: monmon
     ports:
       - "8888:8888"

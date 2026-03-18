@@ -87,6 +87,19 @@ function buildProviderConfig(provider: Provider, fields: Record<string, string>)
   }
 }
 
+function parseProviderConfig(config: string): Record<string, string> {
+  try {
+    const obj = JSON.parse(config)
+    const result: Record<string, string> = {}
+    for (const [k, v] of Object.entries(obj)) {
+      result[k] = String(v)
+    }
+    return result
+  } catch {
+    return {}
+  }
+}
+
 // ── Provider config fields ────────────────────────────────────────────────────
 function ProviderFields({
   provider,
@@ -179,17 +192,47 @@ function Checkbox({ checked, onChange, label, color }: { checked: boolean; onCha
   )
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
-const emptyForm = () => ({
+// ── Form state type ──────────────────────────────────────────────────────────
+interface FormState {
+  name: string
+  task_id: string
+  provider: Provider
+  on_change: boolean
+  on_error: boolean
+  keyword_filter: string
+  enabled: boolean
+  providerFields: Record<string, string>
+  useCustomTemplate: boolean
+  messageTemplate: string
+}
+
+const emptyForm = (): FormState => ({
   name: '', task_id: '', provider: 'slack' as Provider,
   on_change: true, on_error: false, keyword_filter: '', enabled: true,
   providerFields: {} as Record<string, string>,
   useCustomTemplate: false, messageTemplate: '',
 })
 
+function formFromAlert(a: AlertConfig): FormState {
+  return {
+    name: a.name,
+    task_id: a.task_id ? String(a.task_id) : '',
+    provider: a.provider as Provider,
+    on_change: a.on_change,
+    on_error: a.on_error,
+    keyword_filter: a.keyword_filter,
+    enabled: a.enabled,
+    providerFields: parseProviderConfig(a.provider_config),
+    useCustomTemplate: !!a.message_template,
+    messageTemplate: a.message_template || '',
+  }
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 export default function Alerts() {
   const [alerts,      setAlerts]      = useState<AlertConfig[]>([])
-  const [showAdd,     setShowAdd]     = useState(false)
+  const [showForm,    setShowForm]    = useState(false)
+  const [editingId,   setEditingId]   = useState<number | null>(null)
   const [search,      setSearch]      = useState('')
   const [filterScope, setFilterScope] = useState<'all' | 'global' | 'task'>('all')
   const [form,        setForm]        = useState(emptyForm)
@@ -202,27 +245,49 @@ export default function Alerts() {
   const setProviderField = (k: string, v: string) =>
     setForm(f => ({ ...f, providerFields: { ...f.providerFields, [k]: v } }))
 
-  const create = async (e: React.FormEvent) => {
+  const openCreate = () => {
+    setEditingId(null)
+    setForm(emptyForm())
+    setShowForm(true)
+  }
+
+  const openEdit = (a: AlertConfig) => {
+    setEditingId(a.id)
+    setForm(formFromAlert(a))
+    setShowForm(true)
+  }
+
+  const closeForm = () => {
+    setShowForm(false)
+    setEditingId(null)
+    setForm(emptyForm())
+  }
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     const provider_config = buildProviderConfig(form.provider, form.providerFields)
+    const payload = {
+      name:             form.name,
+      task_id:          form.task_id ? Number(form.task_id) : null,
+      provider:         form.provider,
+      provider_config,
+      on_change:        form.on_change,
+      on_error:         form.on_error,
+      keyword_filter:   form.keyword_filter,
+      enabled:          form.enabled,
+      message_template: form.useCustomTemplate ? form.messageTemplate : '',
+    }
     try {
-      await api.post('/alerts', {
-        name:             form.name,
-        task_id:          form.task_id ? Number(form.task_id) : null,
-        provider:         form.provider,
-        provider_config,
-        on_change:        form.on_change,
-        on_error:         form.on_error,
-        keyword_filter:   form.keyword_filter,
-        enabled:          form.enabled,
-        message_template: form.useCustomTemplate ? form.messageTemplate : '',
-      })
-      setShowAdd(false)
-      setForm(emptyForm())
+      if (editingId) {
+        await api.put(`/alerts/${editingId}`, payload)
+      } else {
+        await api.post('/alerts', payload)
+      }
+      closeForm()
       load()
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
-      alert(msg || 'Failed to create alert config')
+      alert(msg || `Failed to ${editingId ? 'update' : 'create'} alert config`)
     }
   }
 
@@ -254,6 +319,8 @@ export default function Alerts() {
     return matchSearch && matchScope
   })
 
+  const isEditing = editingId !== null
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
@@ -263,29 +330,30 @@ export default function Alerts() {
           <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Alert Configs</h2>
           <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{alerts.length} config{alerts.length !== 1 ? 's' : ''}</p>
         </div>
-        <button onClick={() => setShowAdd(!showAdd)} style={{
+        <button onClick={() => showForm ? closeForm() : openCreate()} style={{
           padding: '9px 18px',
-          background: showAdd ? 'rgba(99,102,241,0.15)' : 'var(--accent-solid)',
-          color: showAdd ? 'var(--accent)' : '#ffffff',
-          border: showAdd ? '1px solid rgba(99,102,241,0.3)' : 'none',
+          background: showForm ? 'rgba(99,102,241,0.15)' : 'var(--accent-solid)',
+          color: showForm ? 'var(--accent)' : '#ffffff',
+          border: showForm ? '1px solid rgba(99,102,241,0.3)' : 'none',
           borderRadius: 8, cursor: 'pointer',
           fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
           transition: 'all 0.15s',
-          boxShadow: showAdd ? 'none' : '0 0 16px rgba(99,102,241,0.25)',
+          boxShadow: showForm ? 'none' : '0 0 16px rgba(99,102,241,0.25)',
         }}>
-          {showAdd ? '✕ CANCEL' : '+ NEW ALERT'}
+          {showForm ? '✕ CANCEL' : '+ NEW ALERT'}
         </button>
       </div>
 
-      {/* Add form */}
-      {showAdd && (
-        <form onSubmit={create} style={{
+      {/* Form (create or edit) */}
+      {showForm && (
+        <form onSubmit={submit} style={{
           background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(99,102,241,0.15)', borderRadius: 12, padding: '24px',
+          border: `1px solid ${isEditing ? 'rgba(255,179,0,0.2)' : 'rgba(99,102,241,0.15)'}`,
+          borderRadius: 12, padding: '24px',
           animation: 'cascade-in 0.25s ease-out',
         }}>
-          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--accent)', marginBottom: 20, letterSpacing: '0.08em' }}>
-            NEW ALERT CONFIGURATION
+          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: isEditing ? 'var(--warn)' : 'var(--accent)', marginBottom: 20, letterSpacing: '0.08em' }}>
+            {isEditing ? 'EDIT ALERT CONFIGURATION' : 'NEW ALERT CONFIGURATION'}
           </h3>
 
           {/* Name + Task ID */}
@@ -417,17 +485,19 @@ export default function Alerts() {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-            <button type="button" onClick={() => setShowAdd(false)} style={{
+            <button type="button" onClick={closeForm} style={{
               padding: '9px 18px', background: 'none', border: '1px solid var(--border)',
               borderRadius: 8, cursor: 'pointer', color: 'var(--text-muted)',
               fontFamily: 'var(--font-body)', fontSize: 13,
             }}>Cancel</button>
             <button type="submit" style={{
-              padding: '9px 22px', background: 'var(--accent-solid)', color: '#ffffff',
+              padding: '9px 22px',
+              background: isEditing ? 'var(--warn)' : 'var(--accent-solid)',
+              color: '#ffffff',
               border: 'none', borderRadius: 8, cursor: 'pointer',
               fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
-              boxShadow: '0 0 16px rgba(99,102,241,0.25)',
-            }}>CREATE</button>
+              boxShadow: isEditing ? '0 0 16px rgba(255,179,0,0.25)' : '0 0 16px rgba(99,102,241,0.25)',
+            }}>{isEditing ? 'SAVE' : 'CREATE'}</button>
           </div>
         </form>
       )}
@@ -497,6 +567,10 @@ export default function Alerts() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 6 }}>
+                      <button onClick={() => openEdit(a)} style={{
+                        padding: '4px 10px', background: 'rgba(255,179,0,0.08)', color: '#FFB300',
+                        border: '1px solid rgba(255,179,0,0.2)', borderRadius: 6, cursor: 'pointer', fontSize: 12,
+                      }}>Edit</button>
                       <button onClick={() => testAlert(a.id)} disabled={testing === a.id} style={{
                         padding: '4px 10px', background: 'rgba(56,189,248,0.08)', color: '#38BDF8',
                         border: '1px solid rgba(56,189,248,0.2)', borderRadius: 6, cursor: 'pointer', fontSize: 12,
@@ -505,7 +579,7 @@ export default function Alerts() {
                       <button onClick={() => del(a.id)} style={{
                         padding: '4px 10px', background: 'var(--critical-dim)', color: 'var(--critical)',
                         border: '1px solid rgba(255,59,92,0.2)', borderRadius: 6, cursor: 'pointer', fontSize: 12,
-                      }}>Delete</button>
+                      }}>Del</button>
                     </div>
                   </td>
                 </tr>

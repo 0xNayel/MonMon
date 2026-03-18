@@ -94,9 +94,9 @@ Single binary. Embedded dashboard. Zero external dependencies.
 
 ## Installation
 
-### Docker (recommended)
+### Docker Hub (recommended)
 
-All tools (`subfinder`, `httpx`, `bbscope`, `oathtool`) come pre-installed.
+Pre-built image with all tools (`subfinder`, `httpx`, `bbscope`, `oathtool`) included.
 
 ```bash
 git clone https://github.com/0xNayel/MonMon.git && cd MonMon
@@ -113,10 +113,15 @@ Open **http://localhost:8888**
 #### Updating (Docker)
 
 ```bash
-cd MonMon
-git pull
-docker compose build --no-cache
-docker compose up -d
+docker compose pull && docker compose up -d
+```
+
+#### Build from source (Docker)
+
+Edit `docker-compose.yml`: comment out the `image:` line and uncomment `build: .`, then:
+
+```bash
+docker compose build --no-cache && docker compose up -d
 ```
 
 ---
@@ -392,12 +397,6 @@ MonMon/
 **Docker** (recommended):
 ```bash
 docker compose up -d
-```
-
-**systemd** (Linux):
-```bash
-monmon service install
-monmon service start
 ```
 
 **Screen / tmux**:

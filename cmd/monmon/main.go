@@ -18,7 +18,6 @@ import (
 	"github.com/0xNayel/MonMon/internal/models"
 	"github.com/0xNayel/MonMon/internal/monitor"
 	"github.com/0xNayel/MonMon/internal/scheduler"
-	svc "github.com/0xNayel/MonMon/internal/service"
 	"github.com/0xNayel/MonMon/internal/updater"
 	"github.com/spf13/cobra"
 )
@@ -68,21 +67,6 @@ func main() {
 		Use:   "config",
 		Short: "Configuration commands",
 	})
-
-	// --- service commands ---
-	serviceCmd := &cobra.Command{
-		Use:   "service",
-		Short: "Manage MonMon OS service",
-	}
-	serviceCmd.AddCommand(
-		&cobra.Command{Use: "install", Short: "Install and start service", RunE: func(cmd *cobra.Command, args []string) error { return svc.Install(cfgFile) }},
-		&cobra.Command{Use: "uninstall", Short: "Remove service", RunE: func(cmd *cobra.Command, args []string) error { return svc.Uninstall() }},
-		&cobra.Command{Use: "start", Short: "Start service", RunE: func(cmd *cobra.Command, args []string) error { return svc.Start() }},
-		&cobra.Command{Use: "stop", Short: "Stop service", RunE: func(cmd *cobra.Command, args []string) error { return svc.Stop() }},
-		&cobra.Command{Use: "restart", Short: "Restart service", RunE: func(cmd *cobra.Command, args []string) error { return svc.Restart() }},
-		&cobra.Command{Use: "status", Short: "Show service status", RunE: func(cmd *cobra.Command, args []string) error { return svc.Status() }},
-	)
-	rootCmd.AddCommand(serviceCmd)
 
 	// --- task commands ---
 	taskCmd := &cobra.Command{
@@ -213,16 +197,7 @@ func runServer(cmd *cobra.Command, args []string) error {
 	// Start scheduler
 	sched.Start()
 
-	// If running as OS service, use service runner
-	if svc.IsRunningAsService() {
-		return svc.RunAsService(
-			func() error { return router.Run(fmt.Sprintf(":%d", cfg.Server.Port)) },
-			func() { sched.Stop() },
-			cfgFile,
-		)
-	}
-
-	// Foreground mode: handle signals
+	// Handle signals
 	go func() {
 		log.Info("server", nil, fmt.Sprintf("Listening on :%d", cfg.Server.Port))
 		if err := router.Run(fmt.Sprintf(":%d", cfg.Server.Port)); err != nil {

@@ -7,7 +7,6 @@ require (
 	github.com/glebarez/sqlite v1.11.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/gorilla/websocket v1.5.3
-	github.com/kardianos/service v1.2.4
 	github.com/projectdiscovery/notify v1.0.7
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/zerolog v1.34.0

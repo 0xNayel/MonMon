@@ -1,4 +1,4 @@
-.PHONY: build web run dev test clean install uninstall
+.PHONY: build web run dev test clean
 
 VERSION := 0.1.0
 BINARY  := monmon
@@ -31,10 +31,3 @@ test:
 clean:
 	rm -f $(BINARY) $(BINARY).exe
 	rm -rf data/ internal/webui/dist web/dist
-
-install: build
-	sudo cp $(BINARY) /usr/local/bin/$(BINARY)
-	sudo ./$(BINARY) service install
-
-uninstall:
-	sudo $(BINARY) service uninstall

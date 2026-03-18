@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../api'
-import { formatDuration, formatInterval } from '../utils'
+import { formatDuration, formatInterval, toSeconds } from '../utils'
 
 interface Task {
   id: number; name: string; type: string; status: string; config: string
@@ -45,6 +45,13 @@ const inp: React.CSSProperties = {
   fontSize: 13, outline: 'none',
 }
 
+const formInp: React.CSSProperties = {
+  padding: '8px 12px', background: 'rgba(255,255,255,0.03)',
+  border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8,
+  color: 'var(--text-primary)', fontFamily: 'var(--font-body)',
+  fontSize: 13, outline: 'none', width: '100%',
+}
+
 export default function TaskDetail() {
   const { id } = useParams()
   const [task, setTask] = useState<Task | null>(null)
@@ -55,6 +62,9 @@ export default function TaskDetail() {
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [configOpen, setConfigOpen] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [editForm, setEditForm] = useState({ name: '', schedule_value: '1', schedule_type: 'loop', config: '' })
+  const [editUnit, setEditUnit] = useState<'s' | 'm' | 'h'>('m')
   const perPage = 25
 
   const loadChecks = useCallback(() => {
@@ -68,11 +78,54 @@ export default function TaskDetail() {
     }).finally(() => setLoading(false))
   }, [id, filterStatus, sortOrder, page])
 
-  useEffect(() => { api.get(`/tasks/${id}`).then(r => setTask(r.data)) }, [id])
+  const loadTask = useCallback(() => {
+    api.get(`/tasks/${id}`).then(r => setTask(r.data))
+  }, [id])
+
+  useEffect(() => { loadTask() }, [loadTask])
   useEffect(() => { loadChecks() }, [loadChecks])
   useEffect(() => { setPage(1) }, [filterStatus, sortOrder])
 
   const runNow = async () => { await api.post(`/tasks/${id}/run`); setTimeout(loadChecks, 800) }
+
+  const openEdit = () => {
+    if (!task) return
+    const secs = parseInt(task.schedule_value, 10)
+    let val = String(secs), unit: 's' | 'm' | 'h' = 's'
+    if (secs >= 3600 && secs % 3600 === 0) { val = String(secs / 3600); unit = 'h' }
+    else if (secs >= 60 && secs % 60 === 0) { val = String(secs / 60); unit = 'm' }
+    let prettyConf = task.config
+    try { prettyConf = JSON.stringify(JSON.parse(task.config), null, 2) } catch { /* keep raw */ }
+    setEditForm({ name: task.name, schedule_value: val, schedule_type: task.schedule_type, config: prettyConf })
+    setEditUnit(unit)
+    setEditing(true)
+  }
+
+  const saveEdit = async () => {
+    const payload: Record<string, string> = {
+      name: editForm.name,
+      schedule_type: editForm.schedule_type,
+      schedule_value: editForm.schedule_type === 'loop'
+        ? String(toSeconds(editForm.schedule_value, editUnit))
+        : editForm.schedule_value,
+    }
+    // Validate and compact the JSON config
+    try {
+      const parsed = JSON.parse(editForm.config)
+      payload.config = JSON.stringify(parsed)
+    } catch {
+      alert('Invalid JSON in config')
+      return
+    }
+    try {
+      await api.put(`/tasks/${id}`, payload)
+      setEditing(false)
+      loadTask()
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
+      alert('Error: ' + (msg || 'failed to update task'))
+    }
+  }
 
   const taskStatusStyle = (s: string): React.CSSProperties => {
     if (s === 'active') return { background: 'rgba(99,102,241,0.1)', color: 'var(--accent)', border: '1px solid rgba(99,102,241,0.25)', animation: 'breathe 2s ease-in-out infinite' }
@@ -107,16 +160,101 @@ export default function TaskDetail() {
               <div className="skeleton" style={{ height: 26, width: 240 }} />
             )}
           </div>
-          <button onClick={runNow} style={{
-            padding: '9px 20px', background: 'var(--accent-solid)', color: '#ffffff',
-            border: 'none', borderRadius: 8, cursor: 'pointer',
-            fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
-            boxShadow: '0 0 16px rgba(99,102,241,0.25)', transition: 'all 0.15s',
-          }}>
-            ▶ RUN NOW
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={openEdit} style={{
+              padding: '9px 18px', background: 'rgba(255,179,0,0.1)', color: '#FFB300',
+              border: '1px solid rgba(255,179,0,0.25)', borderRadius: 8, cursor: 'pointer',
+              fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
+              transition: 'all 0.15s',
+            }}>
+              EDIT
+            </button>
+            <button onClick={runNow} style={{
+              padding: '9px 20px', background: 'var(--accent-solid)', color: '#ffffff',
+              border: 'none', borderRadius: 8, cursor: 'pointer',
+              fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
+              boxShadow: '0 0 16px rgba(99,102,241,0.25)', transition: 'all 0.15s',
+            }}>
+              ▶ RUN NOW
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Edit panel */}
+      {editing && (
+        <div style={{
+          background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(255,179,0,0.2)', borderRadius: 12, padding: '24px',
+          animation: 'cascade-in 0.25s ease-out',
+        }}>
+          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--warn)', marginBottom: 20, letterSpacing: '0.08em' }}>
+            EDIT TASK
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+            <div>
+              <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Task Name</label>
+              <input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
+                style={formInp}
+                onFocus={e => (e.target.style.borderColor = 'rgba(255,179,0,0.4)')}
+                onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                {editForm.schedule_type === 'loop' ? 'Interval' : 'Cron Expression'}
+              </label>
+              {editForm.schedule_type === 'loop' ? (
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <input type="number" min="1" value={editForm.schedule_value}
+                    onChange={e => setEditForm(f => ({ ...f, schedule_value: e.target.value }))}
+                    style={{ ...formInp, flex: 1 }}
+                    onFocus={e => (e.target.style.borderColor = 'rgba(255,179,0,0.4)')}
+                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
+                  <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, overflow: 'hidden' }}>
+                    {(['s', 'm', 'h'] as const).map(u => (
+                      <button key={u} type="button" onClick={() => setEditUnit(u)} style={{
+                        padding: '0 14px', height: '100%', border: 'none', cursor: 'pointer',
+                        fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600,
+                        transition: 'all 0.15s',
+                        background: editUnit === u ? 'var(--warn)' : 'transparent',
+                        color: editUnit === u ? '#000' : 'var(--text-muted)',
+                      }}>{u}</button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <input value={editForm.schedule_value}
+                  onChange={e => setEditForm(f => ({ ...f, schedule_value: e.target.value }))}
+                  placeholder="*/5 * * * *" style={formInp}
+                  onFocus={e => (e.target.style.borderColor = 'rgba(255,179,0,0.4)')}
+                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
+              )}
+            </div>
+          </div>
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Config (JSON)</label>
+            <textarea value={editForm.config}
+              onChange={e => setEditForm(f => ({ ...f, config: e.target.value }))}
+              rows={8}
+              style={{ ...formInp, resize: 'vertical', fontFamily: 'var(--font-mono)', fontSize: 12, lineHeight: 1.6 }}
+              onFocus={e => (e.target.style.borderColor = 'rgba(255,179,0,0.4)')}
+              onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+            <button onClick={() => setEditing(false)} style={{
+              padding: '9px 18px', background: 'none', border: '1px solid var(--border)',
+              borderRadius: 8, cursor: 'pointer', color: 'var(--text-muted)',
+              fontFamily: 'var(--font-body)', fontSize: 13,
+            }}>Cancel</button>
+            <button onClick={saveEdit} style={{
+              padding: '9px 22px', background: 'var(--warn)', color: '#000',
+              border: 'none', borderRadius: 8, cursor: 'pointer',
+              fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
+              boxShadow: '0 0 16px rgba(255,179,0,0.25)',
+            }}>SAVE</button>
+          </div>
+        </div>
+      )}
 
       {/* Stats row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
