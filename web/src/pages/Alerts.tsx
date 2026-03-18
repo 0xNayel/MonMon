@@ -11,7 +11,28 @@ interface AlertConfig {
   on_change: boolean
   on_error: boolean
   keyword_filter: string
+  message_template: string
 }
+
+const DEFAULT_TEMPLATE = `MonMon: \`{{.TaskName}}\`
+Type: \`{{.TaskType}}\`
+Status: \`{{.CheckStatus}}\`
+Version: \`#{{.CheckVersion}}\`
+Duration: \`{{.DurationMs}}ms\`{{if .HasDiff}}
+Changes: \`+{{.DiffAdded}} -{{.DiffRemoved}}\`{{end}}`
+
+const TEMPLATE_VARS = [
+  { v: '{{.TaskName}}',     desc: 'Task name' },
+  { v: '{{.TaskType}}',     desc: 'Task type (command / endpoint / subdomain / bbscope)' },
+  { v: '{{.CheckStatus}}',  desc: 'Status (changed / error / no_change)' },
+  { v: '{{.CheckVersion}}', desc: 'Check version number' },
+  { v: '{{.DurationMs}}',   desc: 'Duration in milliseconds' },
+  { v: '{{.DiffAdded}}',    desc: 'Number of added lines' },
+  { v: '{{.DiffRemoved}}',  desc: 'Number of removed lines' },
+  { v: '{{.DiffText}}',     desc: 'Diff content (max 50 lines)' },
+  { v: '{{.HasDiff}}',      desc: 'Boolean — use in {{if .HasDiff}} blocks' },
+  { v: '{{.ErrorMsg}}',     desc: 'Error message (when status = error)' },
+]
 
 type Provider = 'slack' | 'discord' | 'telegram' | 'custom'
 
@@ -163,6 +184,7 @@ const emptyForm = () => ({
   name: '', task_id: '', provider: 'slack' as Provider,
   on_change: true, on_error: false, keyword_filter: '', enabled: true,
   providerFields: {} as Record<string, string>,
+  useCustomTemplate: false, messageTemplate: '',
 })
 
 export default function Alerts() {
@@ -185,14 +207,15 @@ export default function Alerts() {
     const provider_config = buildProviderConfig(form.provider, form.providerFields)
     try {
       await api.post('/alerts', {
-        name:            form.name,
-        task_id:         form.task_id ? Number(form.task_id) : null,
-        provider:        form.provider,
+        name:             form.name,
+        task_id:          form.task_id ? Number(form.task_id) : null,
+        provider:         form.provider,
         provider_config,
-        on_change:       form.on_change,
-        on_error:        form.on_error,
-        keyword_filter:  form.keyword_filter,
-        enabled:         form.enabled,
+        on_change:        form.on_change,
+        on_error:         form.on_error,
+        keyword_filter:   form.keyword_filter,
+        enabled:          form.enabled,
+        message_template: form.useCustomTemplate ? form.messageTemplate : '',
       })
       setShowAdd(false)
       setForm(emptyForm())
@@ -327,6 +350,70 @@ export default function Alerts() {
             <Checkbox checked={form.on_change} onChange={() => setField('on_change', !form.on_change)} label="Alert on Change" color="var(--accent)" />
             <Checkbox checked={form.on_error}  onChange={() => setField('on_error',  !form.on_error)}  label="Alert on Error"  color="var(--critical)" />
             <Checkbox checked={form.enabled}   onChange={() => setField('enabled',   !form.enabled)}   label="Enabled"        color="#38BDF8" />
+          </div>
+
+          {/* Message template */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <label style={LABEL}>Message Template</label>
+              <div style={{ display: 'flex', gap: 6 }}>
+                {(['default', 'custom'] as const).map(mode => (
+                  <button key={mode} type="button"
+                    onClick={() => setField('useCustomTemplate', mode === 'custom')}
+                    style={{
+                      padding: '4px 12px', borderRadius: 6, fontSize: 12, cursor: 'pointer',
+                      fontFamily: 'var(--font-mono)', transition: 'all 0.15s',
+                      background: (mode === 'custom') === form.useCustomTemplate ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.04)',
+                      color:      (mode === 'custom') === form.useCustomTemplate ? 'var(--accent)' : 'var(--text-muted)',
+                      border:     (mode === 'custom') === form.useCustomTemplate ? '1px solid rgba(99,102,241,0.3)' : '1px solid var(--border)',
+                    }}
+                  >{mode}</button>
+                ))}
+              </div>
+            </div>
+
+            {!form.useCustomTemplate ? (
+              <pre style={{
+                background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: 8, padding: '12px 14px', fontSize: 12, color: 'var(--text-muted)',
+                fontFamily: 'var(--font-mono)', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap',
+              }}>{DEFAULT_TEMPLATE}</pre>
+            ) : (
+              <div>
+                <textarea
+                  value={form.messageTemplate || DEFAULT_TEMPLATE}
+                  onChange={e => setField('messageTemplate', e.target.value)}
+                  rows={8}
+                  style={{
+                    ...formInp, resize: 'vertical', lineHeight: 1.7,
+                    fontFamily: 'var(--font-mono)', fontSize: 12,
+                  }}
+                  onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
+                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
+                />
+                <div style={{
+                  marginTop: 10, background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.05)', borderRadius: 8, padding: '12px 14px',
+                }}>
+                  <p style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 8, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Available variables</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 16px' }}>
+                    {TEMPLATE_VARS.map(({ v, desc }) => (
+                      <div key={v} style={{ display: 'flex', gap: 8, alignItems: 'baseline' }}>
+                        <code
+                          onClick={() => setField('messageTemplate', (form.messageTemplate || DEFAULT_TEMPLATE) + v)}
+                          style={{
+                            fontSize: 11, color: 'var(--accent)', fontFamily: 'var(--font-mono)',
+                            cursor: 'pointer', flexShrink: 0,
+                          }}
+                          title="Click to insert"
+                        >{v}</code>
+                        <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>{desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
