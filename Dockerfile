@@ -1,4 +1,4 @@
-# Build the React frontend (run `make web` locally first, or this stage handles it)
+# Build the React frontend
 FROM node:22-alpine AS web-build
 WORKDIR /web
 COPY web/package.json web/package-lock.json ./
@@ -8,7 +8,6 @@ RUN npm run build
 
 # Build the Go binary with the embedded frontend
 FROM golang:1.25-alpine AS go-build
-RUN apk add --no-cache gcc musl-dev sqlite-dev
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download && \
@@ -18,7 +17,9 @@ RUN go mod download && \
 COPY . .
 # Overlay the freshly built frontend into the embed location
 COPY --from=web-build /web/dist ./internal/webui/dist
-RUN CGO_ENABLED=1 go build -ldflags "-s -w" -o /monmon ./cmd/monmon/
+
+ARG VERSION=0.1.0
+RUN CGO_ENABLED=0 go build -ldflags "-s -w -X main.version=${VERSION}" -o /monmon ./cmd/monmon/
 
 # Runtime image — minimal Alpine
 FROM alpine:3.19

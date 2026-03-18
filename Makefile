@@ -12,11 +12,11 @@ web:
 
 # Build the Go binary (requires `make web` first for embedded UI)
 build: web
-	CGO_ENABLED=1 go build $(LDFLAGS) -o $(BINARY) ./cmd/monmon/
+	CGO_ENABLED=0 go build $(LDFLAGS) -o $(BINARY) ./cmd/monmon/
 
 # Build without rebuilding the frontend
 build-go:
-	CGO_ENABLED=1 go build $(LDFLAGS) -o $(BINARY) ./cmd/monmon/
+	CGO_ENABLED=0 go build $(LDFLAGS) -o $(BINARY) ./cmd/monmon/
 
 run: build
 	./$(BINARY) server

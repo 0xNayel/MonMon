@@ -1,5 +1,5 @@
 <p align="center">
-<pre>
+<pre align="center">
    __  __             __  __
   |  \/  | ___  _ __ |  \/  | ___  _ __
   | |\/| |/ _ \| '_ \| |\/| |/ _ \| '_ \
@@ -8,39 +8,87 @@
 </pre>
 </p>
 
+<h3 align="center">Continuous recon & change monitoring for bug bounty hunters</h3>
+
 <p align="center">
-  <b>The monitoring monster for bug bounty hunters.</b><br/>
-  Track subdomains, scope changes, endpoints, and recon output — get alerted the moment something shifts.
+  <a href="https://github.com/0xNayel/MonMon/releases"><img src="https://img.shields.io/github/v/release/0xNayel/MonMon?color=6366f1&label=release&style=flat-square" alt="release"/></a>
+  <a href="https://github.com/0xNayel/MonMon/blob/main/LICENSE"><img src="https://img.shields.io/github/license/0xNayel/MonMon?color=6366f1&style=flat-square" alt="license"/></a>
+  <a href="https://golang.org/"><img src="https://img.shields.io/badge/go-1.22%2B-6366f1?style=flat-square" alt="go"/></a>
+  <a href="https://github.com/0xNayel/MonMon/stargazers"><img src="https://img.shields.io/github/stars/0xNayel/MonMon?style=flat-square&color=6366f1" alt="stars"/></a>
+  <a href="https://hub.docker.com/r/0xnayel/monmon"><img src="https://img.shields.io/badge/docker-ready-6366f1?style=flat-square" alt="docker"/></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/0xNayel/MonMon/releases"><img src="https://img.shields.io/github/v/release/0xNayel/MonMon?color=blue&label=version" alt="release"/></a>
-  <a href="https://github.com/0xNayel/MonMon/blob/main/LICENSE"><img src="https://img.shields.io/github/license/0xNayel/MonMon?color=blue" alt="license"/></a>
-  <a href="https://golang.org/"><img src="https://img.shields.io/badge/go-1.22%2B-blue" alt="go version"/></a>
-  <a href="https://github.com/0xNayel/MonMon/stargazers"><img src="https://img.shields.io/github/stars/0xNayel/MonMon?style=flat&color=blue" alt="stars"/></a>
-  <a href="https://hub.docker.com/r/0xnayel/monmon"><img src="https://img.shields.io/badge/docker-ready-blue" alt="docker"/></a>
+  <a href="#installation">Install</a> &bull;
+  <a href="#features">Features</a> &bull;
+  <a href="#task-types">Tasks</a> &bull;
+  <a href="#alerts">Alerts</a> &bull;
+  <a href="#cli">CLI</a> &bull;
+  <a href="#api-reference">API</a>
 </p>
 
 ---
 
-Bug bounty targets are never static. Programs expand scope, new subdomains go live, API responses change, and JS files get updated overnight. Missing that window means duplicates. MonMon closes it.
+MonMon runs your recon on autopilot. Point it at targets, set intervals, and get alerted the second anything changes — new subdomain, scope expansion, endpoint diff, command output shift. Everything is diffed, versioned, and delivered to Telegram, Slack, or Discord before anyone else notices.
 
-Run it once, point it at your targets, and let it alert you the moment anything moves — new subdomain, scope expansion, endpoint diff, or custom recon output. Everything is diffed, versioned, and delivered to your Telegram, Slack, or Discord before anyone else notices.
+Single binary. Embedded dashboard. Zero external dependencies.
+
+---
+
+## Screenshots
+
+<!-- SCREENSHOT: Dashboard overview -->
+<p align="center">
+  <img src="" width="800" alt="MonMon Dashboard"/>
+  <br/><sub>Dashboard — real-time system overview with animated stats</sub>
+</p>
+
+<!-- SCREENSHOT: Task list -->
+<p align="center">
+  <img src="" width="800" alt="MonMon Tasks"/>
+  <br/><sub>Tasks — manage all monitoring jobs with filters, search, and inline actions</sub>
+</p>
+
+<!-- SCREENSHOT: Task detail + check history -->
+<p align="center">
+  <img src="" width="800" alt="MonMon Task Detail"/>
+  <br/><sub>Task Detail — full check history with pagination, status filters, and diff links</sub>
+</p>
+
+<!-- SCREENSHOT: Diff viewer -->
+<p align="center">
+  <img src="" width="800" alt="MonMon Diff Viewer"/>
+  <br/><sub>Diff Viewer — unified diffs with syntax highlighting, collapse/expand, and first-time detection</sub>
+</p>
+
+<!-- SCREENSHOT: Alerts configuration -->
+<p align="center">
+  <img src="" width="800" alt="MonMon Alerts"/>
+  <br/><sub>Alerts — per-task or global, multi-provider, custom message templates</sub>
+</p>
+
+<!-- SCREENSHOT: Theme picker -->
+<p align="center">
+  <img src="" width="800" alt="MonMon Themes"/>
+  <br/><sub>Themes — 6 built-in themes with live preview and smooth transitions</sub>
+</p>
 
 ---
 
 ## Features
 
-- **Four monitoring modes** — `command`, `endpoint`, `subdomain`, `bbscope`
-- **First-time detection** — every new diff line is checked against the full task history, not just the previous run. Know if a line is truly new or just re-appeared
-- **Smart diff engine** — unified diffs, per-URL breakdown for bulk endpoints, filters: All / Changed only / First time
-- **Subdomain pipeline** — `subfinder -all` → `httpx`, threaded per domain, stable keyed output so reordering never creates false diffs
-- **Bug bounty scope monitoring** — HackerOne and Bugcrowd via `bbscope`, diff scope expansions and get alerted instantly
-- **Bulk endpoint polling** — monitor multiple URLs in a single task, each with its own diff section; modes: `body`, `full`, `metadata`, `regex`
-- **Flexible alerts** — Slack, Discord, Telegram, custom webhook; per-task or global scope; keyword filter; test button per config
-- **Embedded web dashboard** — React SPA served from the binary, no separate server. Task manager, diff viewer with collapse + search, real-time log stream (WebSocket)
-- **System health page** — check if `subfinder`, `httpx`, `bbscope` are installed and in PATH
-- **Single binary, zero dependencies** — SQLite (WAL mode), embedded frontend, JWT auth, auto-generated secret
+| Category | Details |
+|----------|---------|
+| **Monitoring Modes** | `command` · `endpoint` · `subdomain` · `bbscope` — four task types covering shell output, HTTP responses, subdomain discovery, and bug bounty scope |
+| **Smart Diff Engine** | Unified diffs with per-URL breakdown for bulk endpoints. Filters: All / Changed / First-time. Every new line is checked against full task history, not just the previous run |
+| **Subdomain Pipeline** | `subfinder -all` → `httpx` per domain, threaded execution, stable keyed output — reordering never creates false positives |
+| **Scope Monitoring** | HackerOne + Bugcrowd via `bbscope`. Diff scope expansions instantly |
+| **Bulk Endpoints** | Monitor multiple URLs in a single task. Each URL gets its own diff section. Modes: `body` · `full` · `metadata` · `regex` |
+| **Alerts** | Slack, Discord, Telegram, custom webhook. Per-task or global scope. Keyword filter. Custom message templates. Test button per config |
+| **Dashboard** | React SPA embedded in the binary. Task manager, diff viewer with collapse + search, real-time log stream (WebSocket), animated stats |
+| **Multi-Theme UI** | 6 themes (Phantom, Midnight, Terminal, Obsidian, Crimson, Frost) with live preview, View Transitions API, and localStorage persistence |
+| **Self-Update** | `monmon update` checks GitHub releases and self-updates the binary |
+| **Single Binary** | SQLite (WAL), embedded frontend, JWT auth, auto-generated secret. No external services |
 
 ---
 
@@ -48,20 +96,28 @@ Run it once, point it at your targets, and let it alert you the moment anything 
 
 ### Docker (recommended)
 
-Comes with `subfinder`, `httpx`, and `bbscope` pre-installed — no setup needed.
+All tools (`subfinder`, `httpx`, `bbscope`, `oathtool`) come pre-installed.
 
 ```bash
-git clone https://github.com/0xNayel/MonMon.git
-cd MonMon
+git clone https://github.com/0xNayel/MonMon.git && cd MonMon
 
 # Set admin credentials
 echo "MONMON_ADMIN_USER=admin" >> .env
-echo "MONMON_ADMIN_PASSWORD=yourpassword" >> .env
+echo "MONMON_ADMIN_PASSWORD=changeme" >> .env
 
 docker compose up -d
 ```
 
-Open `http://localhost:8888` — read-only account: `monmon` / `monmon`.
+Open **http://localhost:8888**
+
+#### Updating (Docker)
+
+```bash
+cd MonMon
+git pull
+docker compose build --no-cache
+docker compose up -d
+```
 
 ---
 
@@ -72,38 +128,53 @@ go install github.com/0xNayel/MonMon/cmd/monmon@latest
 monmon server
 ```
 
-Open `http://localhost:8888`. Requires Go 1.22+.
+Open **http://localhost:8888** — requires Go 1.22+.
 
-For subdomain and bbscope tasks, install the required tools first — see [Prerequisites](#prerequisites).
+#### Updating (go install)
+
+```bash
+monmon update
+```
+
+Or manually:
+
+```bash
+go install github.com/0xNayel/MonMon/cmd/monmon@latest
+```
+
+---
+
+### Build from source
+
+```bash
+git clone https://github.com/0xNayel/MonMon.git && cd MonMon
+make build
+./monmon server
+```
 
 ---
 
 ## Prerequisites
 
-Required only for subdomain and bbscope task types. Not needed for `command` or `endpoint` tasks (or when using Docker).
+Required **only** for `subdomain` and `bbscope` task types. Not needed for `command` / `endpoint` tasks, or when using Docker.
 
-**subfinder**
 ```bash
+# subfinder
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-```
 
-**httpx**
-```bash
+# httpx
 go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
-```
 
-**bbscope** — use the original version, **not v2**
-```bash
+# bbscope (use v1, NOT v2)
 go install github.com/sw33tLie/bbscope@latest
+
+# oathtool (for bbscope HackerOne OTP) — install via package manager
+# Debian/Ubuntu: apt install oathtool
+# macOS: brew install oath-toolkit
+# Alpine: apk add oath-toolkit-oathtool
 ```
 
-> Verify all tools are detected: run `monmon server` and visit **System** in the dashboard, or run `./check-tools.sh`.
-
----
-
-## Dashboard
-
-<!-- Add screenshots here -->
+> Verify tools: open **System** in the dashboard, or check the API at `/api/system/tools`.
 
 ---
 
@@ -113,16 +184,13 @@ go install github.com/sw33tLie/bbscope@latest
 
 ```json
 {
-  "type": "command",
-  "config": {
-    "command": "gau target.com | sort -u",
-    "output_mode": "stdout",
-    "timeout_sec": 120
-  }
+  "command": "gau target.com | sort -u",
+  "output_mode": "stdout",
+  "timeout_sec": 120
 }
 ```
 
-Pipe anything — `nuclei`, `ffuf`, `gau`, `waybackurls`, `katana`, custom scripts. The diff shows exactly what changed.
+Pipe anything — `nuclei`, `ffuf`, `gau`, `waybackurls`, `katana`, custom scripts. MonMon diffs the stdout.
 
 ---
 
@@ -130,18 +198,15 @@ Pipe anything — `nuclei`, `ffuf`, `gau`, `waybackurls`, `katana`, custom scrip
 
 ```json
 {
-  "type": "endpoint",
-  "config": {
-    "urls": ["https://target.com/api/v1/", "https://target.com/api/v2/"],
-    "method": "GET",
-    "monitor_mode": "body"
-  }
+  "urls": ["https://target.com/api/v1/", "https://target.com/api/v2/"],
+  "method": "GET",
+  "monitor_mode": "body"
 }
 ```
 
 Monitor modes: `body` · `full` (headers + body) · `metadata` (status / length / title) · `regex`
 
-Multiple URLs in one task — each gets its own diff section, never mixed.
+Multiple URLs per task — each gets its own diff section.
 
 ---
 
@@ -149,18 +214,15 @@ Multiple URLs in one task — each gets its own diff section, never mixed.
 
 ```json
 {
-  "type": "subdomain",
-  "config": {
-    "domains": ["target.com", "sub.target.com"],
-    "httpx_sc": true,
-    "httpx_title": true,
-    "httpx_td": true,
-    "threads": 5
-  }
+  "domains": ["target.com", "sub.target.com"],
+  "httpx_sc": true,
+  "httpx_title": true,
+  "httpx_td": true,
+  "threads": 5
 }
 ```
 
-Runs `subfinder -all` per domain, pipes through `httpx`. Each result is a stable keyed line — new subdomains appear as genuine diffs, not noise.
+`subfinder -all` per domain → `httpx`. Stable keyed output means reordering never creates false diffs.
 
 ---
 
@@ -168,47 +230,46 @@ Runs `subfinder -all` per domain, pipes through `httpx`. Each result is a stable
 
 ```json
 {
-  "type": "bbscope",
-  "config": {
-    "platform": "h1",
-    "token": "your_api_token",
-    "username": "your_h1_username",
-    "bounty_only": false,
-    "output_type": "tc"
-  }
+  "platform": "h1",
+  "token": "your_api_token",
+  "username": "your_h1_username",
+  "bounty_only": false,
+  "output_type": "tc"
 }
 ```
 
-Supported platforms: `h1` (HackerOne), `bc` (Bugcrowd). Diff scope expansions and get alerted the moment a new domain or asset class is added.
+Platforms: `h1` (HackerOne) · `bc` (Bugcrowd). Get alerted the moment a scope expansion drops.
 
 ---
 
 ## Alerts
 
-Configured entirely from the dashboard — no config files.
+Configured entirely from the dashboard UI.
 
 1. **Alerts** → **+ NEW ALERT**
-2. Name it, pick a provider: Slack / Discord / Telegram / Custom webhook
-3. Fill in credentials or webhook URL
-4. Set scope: global (all tasks) or a specific task
-5. Trigger: on change, on error, or both
-6. Optional keyword filter — only alert when output contains a match
+2. Name it, pick a provider (Slack / Discord / Telegram / Webhook)
+3. Set scope: global or per-task
+4. Trigger: on change, on error, or both
+5. Optional keyword filter
+6. Optional custom message template with variables:
 
-Alert message format:
-```
-MonMon: `target.com`
-Type: `subdomain`
-Status: `changed`
-Version: `#42`
-Duration: `8420ms`
-Changes: `+3 -1`
-```
+| Variable | Description |
+|----------|-------------|
+| `{{.TaskName}}` | Task name |
+| `{{.TaskType}}` | Task type |
+| `{{.CheckStatus}}` | Check result status |
+| `{{.Version}}` | Check version number |
+| `{{.DurationMs}}` | Execution time in ms |
+| `{{.DiffAdded}}` | Lines added |
+| `{{.DiffRemoved}}` | Lines removed |
+| `{{.ErrorMsg}}` | Error message (if any) |
+| `{{.Timestamp}}` | Check timestamp |
 
 ---
 
 ## Configuration
 
-All settings can be overridden with environment variables using the `MONMON_` prefix (e.g. `MONMON_SERVER_PORT=9090`).
+Settings via YAML or environment variables with `MONMON_` prefix.
 
 ```yaml
 server:
@@ -218,14 +279,14 @@ database:
   path: "./data/monmon.db"
 
 auth:
-  jwt_secret: ""          # auto-generated if empty
+  jwt_secret: ""            # auto-generated if empty
 
 logging:
-  level: "info"           # debug / info / warn / error
+  level: "info"             # debug / info / warn / error
   file: "./data/monmon.log"
 
 retention:
-  default_keep: 0         # 0 = keep all, N = keep last N checks
+  default_keep: 0           # 0 = keep all, N = keep last N checks
   cleanup_interval: "1h"
 
 tools:
@@ -233,56 +294,55 @@ tools:
   httpx: "httpx"
 ```
 
+Environment override example: `MONMON_SERVER_PORT=9090`
+
 ---
 
 ## CLI
 
 ```bash
-# Start server
-monmon server
-monmon server -p 9090 -c /path/to/config.yaml
+monmon server                              # Start server (default :8888)
+monmon server -p 9090 -c config.yaml       # Custom port + config
+monmon version                             # Print version
+monmon update                              # Self-update from GitHub
 
-# Tasks
-monmon task list [--type subdomain] [--status active] [--search "target"]
-monmon task run <id>
-monmon task pause <id>
-monmon task resume <id>
-monmon task delete <id>
+monmon task list                           # List all tasks
+monmon task add-cmd "gau target.com"       # Add command task
+monmon task add-url "https://target.com"   # Add endpoint task
+monmon task add-domain target.com          # Add subdomain task
+monmon task run <id>                       # Trigger immediate check
+monmon task pause <id>                     # Pause task
+monmon task resume <id>                    # Resume task
+monmon task delete <id>                    # Delete task + checks
 
-# Checks
-monmon check list <task_id>
-monmon check diff <check_id>
+monmon check list <task_id>                # List checks for a task
+monmon check diff <check_id>               # Show diff output
 
-# Logs
-monmon logs [-f] [--level error] [--task <id>]
-
-# Other
-monmon config init
-monmon version
+monmon logs                                # View recent logs
 ```
 
 ---
 
-## API
+## API Reference
 
 All routes except `/api/login` require `Authorization: Bearer <jwt>`.
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/api/login` | Authenticate, returns JWT |
-| `GET` | `/api/tasks` | List tasks (`type`, `status`, `tag`, `search`, `sort`, `order`, `page`, `per_page`) |
+| `POST` | `/api/login` | Authenticate → JWT |
+| `GET` | `/api/tasks` | List tasks (filter: `type`, `status`, `search`, `sort`, `order`, `page`, `per_page`) |
 | `POST` | `/api/tasks` | Create task |
 | `GET` | `/api/tasks/:id` | Get task |
 | `PUT` | `/api/tasks/:id` | Update task |
-| `DELETE` | `/api/tasks/:id` | Delete task |
+| `DELETE` | `/api/tasks/:id` | Delete task + checks |
 | `POST` | `/api/tasks/:id/pause` | Pause task |
 | `POST` | `/api/tasks/:id/resume` | Resume task |
 | `POST` | `/api/tasks/:id/run` | Trigger immediate run |
-| `GET` | `/api/tasks/:id/checks` | List checks (`page`, `per_page`, `status`, `order`) |
-| `GET` | `/api/checks/:id` | Get check metadata |
+| `GET` | `/api/tasks/:id/checks` | Check history (filter: `status`, `order`, `page`, `per_page`) |
+| `GET` | `/api/checks/:id` | Check metadata |
 | `GET` | `/api/checks/:id/output` | Raw output text |
 | `GET` | `/api/checks/:id/diff` | Structured diff |
-| `GET` | `/api/checks/compare` | Diff between any two checks (`from`, `to`) |
+| `GET` | `/api/checks/compare` | Compare any two checks (`from`, `to`) |
 | `GET` | `/api/alerts` | List alert configs |
 | `POST` | `/api/alerts` | Create alert config |
 | `PUT` | `/api/alerts/:id` | Update alert config |
@@ -292,6 +352,7 @@ All routes except `/api/login` require `Authorization: Bearer <jwt>`.
 | `WS` | `/api/ws/logs` | Real-time log stream |
 | `GET` | `/api/stats` | Dashboard stats |
 | `GET` | `/api/system/tools` | Tool availability check |
+| `GET` | `/api/system/version` | Current + latest version info |
 
 ---
 
@@ -299,28 +360,56 @@ All routes except `/api/login` require `Authorization: Bearer <jwt>`.
 
 ```
 MonMon/
-├── cmd/monmon/main.go            # CLI entry point (Cobra)
+├── cmd/monmon/main.go            # CLI entry + Cobra commands
 ├── internal/
+│   ├── api/                      # Gin REST handlers + WebSocket
+│   ├── alert/                    # Multi-provider alert delivery
+│   ├── auth/                     # JWT + bcrypt + env-based admin
 │   ├── config/                   # Viper config loading
-│   ├── models/                   # GORM models (Task, Check, AlertConfig, Log, User)
 │   ├── db/                       # SQLite init + auto-migrations
+│   ├── diff/                     # Unified diff engine
+│   ├── logger/                   # Zerolog + DB writer
+│   ├── models/                   # GORM models
 │   ├── monitor/
 │   │   ├── command.go            # Shell command executor
 │   │   ├── endpoint.go           # HTTP fetcher (bulk multi-URL)
-│   │   ├── subdomain.go          # subfinder → httpx pipeline (threaded)
+│   │   ├── subdomain.go          # subfinder → httpx pipeline
 │   │   └── bbscope.go            # Bug bounty scope monitor
-│   ├── diff/                     # Unified diff engine (sergi/go-diff)
-│   ├── scheduler/                # Cron + loop scheduling (robfig/cron)
-│   ├── alert/                    # Per-alert delivery (projectdiscovery/notify)
-│   ├── auth/                     # JWT + bcrypt + env-based admin sync
-│   ├── api/                      # Gin REST + WebSocket handlers
-│   └── logger/                   # Zerolog + DB log writer
-├── web/                          # React + TypeScript SPA (go:embed)
+│   ├── scheduler/                # Cron + loop scheduling
+│   ├── updater/                  # Self-update from GitHub releases
+│   └── webui/                    # Embedded React SPA (go:embed)
+├── web/                          # React + TypeScript source
 ├── configs/                      # Example YAML configs
-├── check-tools.sh                # Tool dependency checker
-├── Dockerfile                    # Multi-stage build (node → go → alpine)
+├── Dockerfile                    # Multi-stage (node → go → alpine)
 ├── docker-compose.yml
 └── Makefile
+```
+
+---
+
+## Running in Background
+
+**Docker** (recommended):
+```bash
+docker compose up -d
+```
+
+**systemd** (Linux):
+```bash
+monmon service install
+monmon service start
+```
+
+**Screen / tmux**:
+```bash
+screen -dmS monmon monmon server
+# or
+tmux new -d -s monmon 'monmon server'
+```
+
+**nohup**:
+```bash
+nohup monmon server > /dev/null 2>&1 &
 ```
 
 ---

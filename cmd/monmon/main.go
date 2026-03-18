@@ -19,6 +19,7 @@ import (
 	"github.com/0xNayel/MonMon/internal/monitor"
 	"github.com/0xNayel/MonMon/internal/scheduler"
 	svc "github.com/0xNayel/MonMon/internal/service"
+	"github.com/0xNayel/MonMon/internal/updater"
 	"github.com/spf13/cobra"
 )
 
@@ -51,6 +52,15 @@ func main() {
 		Use:   "version",
 		Short: "Print version",
 		Run:   func(cmd *cobra.Command, args []string) { fmt.Println("MonMon v" + version) },
+	})
+
+	// --- update command ---
+	rootCmd.AddCommand(&cobra.Command{
+		Use:   "update",
+		Short: "Check for updates and self-update from GitHub",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return updater.SelfUpdate(version)
+		},
 	})
 
 	// --- config init ---
@@ -196,6 +206,7 @@ func runServer(cmd *cobra.Command, args []string) error {
 		Auth:      authSvc,
 		Scheduler: sched,
 		Logger:    log,
+		Version:   version,
 	}
 	router := srv.SetupRouter()
 

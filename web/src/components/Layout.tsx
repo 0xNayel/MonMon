@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { themes, type Theme } from '../themes'
+import api from '../api'
 
 const nav = [
   {
@@ -232,6 +233,11 @@ export default function Layout() {
   const { theme } = useTheme()
   const [pickerOpen, setPickerOpen] = useState(false)
   const paletteRef = useRef<HTMLButtonElement>(null)
+  const [versionInfo, setVersionInfo] = useState<{ current: string; latest: string; update_available: boolean } | null>(null)
+
+  useEffect(() => {
+    api.get('/system/version').then(r => setVersionInfo(r.data)).catch(() => {})
+  }, [])
 
   const logout = () => { localStorage.removeItem('monmon_token'); navigate('/login') }
 
@@ -322,6 +328,32 @@ export default function Layout() {
               flexShrink: 0,
             }} />
           </button>
+
+          {/* Version */}
+          {versionInfo && (
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '4px 0', fontSize: 11, fontFamily: 'var(--font-mono)',
+            }}>
+              <span style={{ color: 'var(--text-faint)' }}>v{versionInfo.current}</span>
+              {versionInfo.update_available && (
+                <a
+                  href={`https://github.com/0xNayel/MonMon/releases`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontSize: 10, fontWeight: 600, padding: '2px 7px',
+                    borderRadius: 4, textDecoration: 'none',
+                    background: 'rgba(99,102,241,0.12)', color: 'var(--accent)',
+                    border: '1px solid rgba(99,102,241,0.25)',
+                    animation: 'breathe 2s ease-in-out infinite',
+                  }}
+                >
+                  v{versionInfo.latest} available
+                </a>
+              )}
+            </div>
+          )}
 
           {/* Sign out */}
           <button onClick={logout} style={{

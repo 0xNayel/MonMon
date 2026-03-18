@@ -17,6 +17,7 @@ type Server struct {
 	Auth      *auth.AuthService
 	Scheduler *scheduler.Scheduler
 	Logger    *logger.AppLogger
+	Version   string
 }
 
 // SetupRouter creates and returns the Gin router with all routes.
@@ -26,7 +27,7 @@ func (s *Server) SetupRouter() *gin.Engine {
 
 	// Fingerprint header
 	r.Use(func(c *gin.Context) {
-		c.Header("X-MonMon", "MonMon/0.1.0")
+		c.Header("X-MonMon", "MonMon/"+s.Version)
 		c.Next()
 	})
 
@@ -83,6 +84,7 @@ func (s *Server) SetupRouter() *gin.Engine {
 
 		// System
 		protected.GET("/system/tools", s.handleToolsCheck)
+		protected.GET("/system/version", s.handleVersionCheck)
 
 		// WebSocket
 		protected.GET("/ws/logs", s.handleWSLogs)
