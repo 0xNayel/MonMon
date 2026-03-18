@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../api'
+import { useTheme } from '../context/ThemeContext'
 
 export default function Login() {
+  const { theme } = useTheme()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -41,7 +43,7 @@ export default function Login() {
       {/* Background glow */}
       <div style={{
         position: 'absolute', width: 600, height: 600, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 70%)',
+        background: `radial-gradient(circle, var(--accent-dim) 0%, transparent 70%)`,
         top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
         pointerEvents: 'none',
       }} />
@@ -59,8 +61,8 @@ export default function Login() {
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{
             width: 52, height: 52, borderRadius: '50%', margin: '0 auto 16px',
-            background: 'radial-gradient(circle at 38% 38%, #818CF8, #1e1b4b)',
-            boxShadow: '0 0 32px rgba(99,102,241,0.4)',
+            background: theme.eyeGradient,
+            boxShadow: `0 0 32px var(--accent-glow)`,
             animation: 'breathe 2s ease-in-out infinite',
           }} />
           <div style={{
@@ -103,12 +105,12 @@ export default function Login() {
 
         <button type="submit" disabled={loading} style={{
           width: '100%', padding: '12px',
-          background: loading ? 'rgba(99,102,241,0.15)' : 'var(--accent-solid)',
+          background: loading ? 'var(--accent-dim)' : 'var(--accent-solid)',
           color: loading ? 'var(--accent)' : '#ffffff',
           border: 'none', borderRadius: 8, cursor: loading ? 'not-allowed' : 'pointer',
           fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700,
           letterSpacing: '0.08em', transition: 'all 0.15s',
-          boxShadow: loading ? 'none' : '0 0 20px rgba(99,102,241,0.3)',
+          boxShadow: loading ? 'none' : `0 0 20px var(--accent-glow)`,
         }}>
           {loading ? 'AUTHENTICATING...' : 'ENTER SYSTEM'}
         </button>

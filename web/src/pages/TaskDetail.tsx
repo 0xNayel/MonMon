@@ -162,8 +162,8 @@ export default function TaskDetail() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={openEdit} style={{
-              padding: '9px 18px', background: 'rgba(255,179,0,0.1)', color: '#FFB300',
-              border: '1px solid rgba(255,179,0,0.25)', borderRadius: 8, cursor: 'pointer',
+              padding: '9px 18px', background: 'var(--accent-dim)', color: 'var(--accent)',
+              border: '1px solid var(--accent-glow)', borderRadius: 8, cursor: 'pointer',
               fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
               transition: 'all 0.15s',
             }}>
@@ -185,10 +185,10 @@ export default function TaskDetail() {
       {editing && (
         <div style={{
           background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255,179,0,0.2)', borderRadius: 12, padding: '24px',
+          border: '1px solid var(--accent-glow)', borderRadius: 12, padding: '24px',
           animation: 'cascade-in 0.25s ease-out',
         }}>
-          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--warn)', marginBottom: 20, letterSpacing: '0.08em' }}>
+          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--accent)', marginBottom: 20, letterSpacing: '0.08em' }}>
             EDIT TASK
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
@@ -196,7 +196,7 @@ export default function TaskDetail() {
               <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Task Name</label>
               <input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
                 style={formInp}
-                onFocus={e => (e.target.style.borderColor = 'rgba(255,179,0,0.4)')}
+                onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
                 onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
             </div>
             <div>
@@ -208,7 +208,7 @@ export default function TaskDetail() {
                   <input type="number" min="1" value={editForm.schedule_value}
                     onChange={e => setEditForm(f => ({ ...f, schedule_value: e.target.value }))}
                     style={{ ...formInp, flex: 1 }}
-                    onFocus={e => (e.target.style.borderColor = 'rgba(255,179,0,0.4)')}
+                    onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
                     onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
                   <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, overflow: 'hidden' }}>
                     {(['s', 'm', 'h'] as const).map(u => (
@@ -216,8 +216,8 @@ export default function TaskDetail() {
                         padding: '0 14px', height: '100%', border: 'none', cursor: 'pointer',
                         fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600,
                         transition: 'all 0.15s',
-                        background: editUnit === u ? 'var(--warn)' : 'transparent',
-                        color: editUnit === u ? '#000' : 'var(--text-muted)',
+                        background: editUnit === u ? 'var(--accent-solid)' : 'transparent',
+                        color: editUnit === u ? '#fff' : 'var(--text-muted)',
                       }}>{u}</button>
                     ))}
                   </div>
@@ -226,7 +226,7 @@ export default function TaskDetail() {
                 <input value={editForm.schedule_value}
                   onChange={e => setEditForm(f => ({ ...f, schedule_value: e.target.value }))}
                   placeholder="*/5 * * * *" style={formInp}
-                  onFocus={e => (e.target.style.borderColor = 'rgba(255,179,0,0.4)')}
+                  onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
                   onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
               )}
             </div>
@@ -237,7 +237,7 @@ export default function TaskDetail() {
               onChange={e => setEditForm(f => ({ ...f, config: e.target.value }))}
               rows={8}
               style={{ ...formInp, resize: 'vertical', fontFamily: 'var(--font-mono)', fontSize: 12, lineHeight: 1.6 }}
-              onFocus={e => (e.target.style.borderColor = 'rgba(255,179,0,0.4)')}
+              onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
               onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
@@ -247,10 +247,10 @@ export default function TaskDetail() {
               fontFamily: 'var(--font-body)', fontSize: 13,
             }}>Cancel</button>
             <button onClick={saveEdit} style={{
-              padding: '9px 22px', background: 'var(--warn)', color: '#000',
+              padding: '9px 22px', background: 'var(--accent-solid)', color: '#fff',
               border: 'none', borderRadius: 8, cursor: 'pointer',
               fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
-              boxShadow: '0 0 16px rgba(255,179,0,0.25)',
+              boxShadow: '0 0 16px var(--accent-glow)',
             }}>SAVE</button>
           </div>
         </div>

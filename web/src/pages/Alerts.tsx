@@ -69,7 +69,7 @@ const LABEL: React.CSSProperties = {
 const FIELD: React.CSSProperties = { marginBottom: 14 }
 
 function focusBorder(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) {
-  e.target.style.borderColor = 'rgba(99,102,241,0.4)'
+  e.target.style.borderColor = 'var(--accent-glow)'
 }
 function blurBorder(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>, base = 'rgba(255,255,255,0.08)') {
   e.target.style.borderColor = base
@@ -348,11 +348,11 @@ export default function Alerts() {
       {showForm && (
         <form onSubmit={submit} style={{
           background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(12px)',
-          border: `1px solid ${isEditing ? 'rgba(255,179,0,0.2)' : 'rgba(99,102,241,0.15)'}`,
+          border: `1px solid ${isEditing ? 'var(--warn-dim)' : 'var(--accent-dim)'}`,
           borderRadius: 12, padding: '24px',
           animation: 'cascade-in 0.25s ease-out',
         }}>
-          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: isEditing ? 'var(--warn)' : 'var(--accent)', marginBottom: 20, letterSpacing: '0.08em' }}>
+          <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--accent)', marginBottom: 20, letterSpacing: '0.08em' }}>
             {isEditing ? 'EDIT ALERT CONFIGURATION' : 'NEW ALERT CONFIGURATION'}
           </h3>
 
@@ -417,7 +417,7 @@ export default function Alerts() {
           <div style={{ display: 'flex', gap: 24, marginBottom: 20 }}>
             <Checkbox checked={form.on_change} onChange={() => setField('on_change', !form.on_change)} label="Alert on Change" color="var(--accent)" />
             <Checkbox checked={form.on_error}  onChange={() => setField('on_error',  !form.on_error)}  label="Alert on Error"  color="var(--critical)" />
-            <Checkbox checked={form.enabled}   onChange={() => setField('enabled',   !form.enabled)}   label="Enabled"        color="#38BDF8" />
+            <Checkbox checked={form.enabled}   onChange={() => setField('enabled',   !form.enabled)}   label="Enabled"        color="var(--accent)" />
           </div>
 
           {/* Message template */}
@@ -492,11 +492,11 @@ export default function Alerts() {
             }}>Cancel</button>
             <button type="submit" style={{
               padding: '9px 22px',
-              background: isEditing ? 'var(--warn)' : 'var(--accent-solid)',
+              background: 'var(--accent-solid)',
               color: '#ffffff',
               border: 'none', borderRadius: 8, cursor: 'pointer',
               fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
-              boxShadow: isEditing ? '0 0 16px rgba(255,179,0,0.25)' : '0 0 16px rgba(99,102,241,0.25)',
+              boxShadow: `0 0 16px var(--accent-glow)`,
             }}>{isEditing ? 'SAVE' : 'CREATE'}</button>
           </div>
         </form>
@@ -541,7 +541,7 @@ export default function Alerts() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     {a.task_id
-                      ? <span style={{ padding: '3px 9px', background: 'rgba(56,189,248,0.1)', color: '#38BDF8', border: '1px solid rgba(56,189,248,0.2)', borderRadius: 6, fontSize: 12 }}>Task #{a.task_id}</span>
+                      ? <span style={{ padding: '3px 9px', background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--accent-glow)', borderRadius: 6, fontSize: 12 }}>Task #{a.task_id}</span>
                       : <span style={{ padding: '3px 9px', background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)', border: '1px solid var(--border)', borderRadius: 6, fontSize: 12 }}>Global</span>
                     }
                   </td>
@@ -568,12 +568,12 @@ export default function Alerts() {
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button onClick={() => openEdit(a)} style={{
-                        padding: '4px 10px', background: 'rgba(255,179,0,0.08)', color: '#FFB300',
-                        border: '1px solid rgba(255,179,0,0.2)', borderRadius: 6, cursor: 'pointer', fontSize: 12,
+                        padding: '4px 10px', background: 'var(--accent-dim)', color: 'var(--accent)',
+                        border: '1px solid var(--accent-glow)', borderRadius: 6, cursor: 'pointer', fontSize: 12,
                       }}>Edit</button>
                       <button onClick={() => testAlert(a.id)} disabled={testing === a.id} style={{
-                        padding: '4px 10px', background: 'rgba(56,189,248,0.08)', color: '#38BDF8',
-                        border: '1px solid rgba(56,189,248,0.2)', borderRadius: 6, cursor: 'pointer', fontSize: 12,
+                        padding: '4px 10px', background: 'var(--warn-dim)', color: 'var(--warn)',
+                        border: '1px solid var(--warn-dim)', borderRadius: 6, cursor: 'pointer', fontSize: 12,
                         opacity: testing === a.id ? 0.5 : 1,
                       }}>{testing === a.id ? '...' : 'Test'}</button>
                       <button onClick={() => del(a.id)} style={{

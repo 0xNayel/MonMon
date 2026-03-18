@@ -54,7 +54,7 @@ function Toggle({ checked, onChange, label: lbl }: { checked: boolean; onChange:
 }
 
 function focusBorder(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
-  e.target.style.borderColor = 'rgba(99,102,241,0.4)'
+  e.target.style.borderColor = 'var(--accent-glow)'
 }
 function blurBorder(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
   e.target.style.borderColor = 'rgba(255,255,255,0.08)'
@@ -90,6 +90,7 @@ export default function ConfigForm({ type, value, onChange }: Props) {
   const [bbEmail,      setBbEmail]      = useState('')
   const [bbPassword,   setBbPassword]   = useState('')
   const [bbOtp,        setBbOtp]        = useState('')
+  const [bbCategories, setBbCategories] = useState('')
   const [bbBounty,     setBbBounty]     = useState(true)
   const [bbOutputType, setBbOutputType] = useState('tc')
 
@@ -124,6 +125,7 @@ export default function ConfigForm({ type, value, onChange }: Props) {
         setBbEmail(cfg.email || '')
         setBbPassword(cfg.password || '')
         setBbOtp(cfg.otp_command || '')
+        setBbCategories(cfg.categories || '')
         setBbBounty(cfg.bounty_only ?? true)
         setBbOutputType(cfg.output_type || 'tc')
       }
@@ -171,6 +173,15 @@ export default function ConfigForm({ type, value, onChange }: Props) {
         if (bbEmail)    cfg.email       = bbEmail
         if (bbPassword) cfg.password    = bbPassword
         if (bbOtp)      cfg.otp_command = bbOtp
+      } else if (bbPlatform === 'it') {
+        if (bbToken) cfg.token = bbToken
+        if (bbCategories) cfg.categories = bbCategories
+      } else if (bbPlatform === 'ywh') {
+        if (bbToken)    cfg.token       = bbToken
+        if (bbEmail)    cfg.email       = bbEmail
+        if (bbPassword) cfg.password    = bbPassword
+        if (bbOtp)      cfg.otp_command = bbOtp
+        if (bbCategories) cfg.categories = bbCategories
       }
     }
     onChange(JSON.stringify(cfg))
@@ -178,7 +189,7 @@ export default function ConfigForm({ type, value, onChange }: Props) {
     type, urls, mode, method, headers, regex, epTimeout,
     command, outputMode, outputFile, cmdTimeout,
     domains, httpxSC, httpxCT, httpxTitle, httpxTD, threads,
-    bbPlatform, bbToken, bbUsername, bbEmail, bbPassword, bbOtp, bbBounty, bbOutputType,
+    bbPlatform, bbToken, bbUsername, bbEmail, bbPassword, bbOtp, bbCategories, bbBounty, bbOutputType,
   ])
 
   const grid2: React.CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }
@@ -288,12 +299,16 @@ export default function ConfigForm({ type, value, onChange }: Props) {
           <select value={bbPlatform} onChange={e => setBbPlatform(e.target.value)} style={sel} onFocus={focusBorder} onBlur={blurBorder}>
             <option value="h1">HackerOne (h1)</option>
             <option value="bc">Bugcrowd (bc)</option>
+            <option value="it">Intigriti (it)</option>
+            <option value="ywh">YesWeHack (ywh)</option>
           </select>
         </Field>
         <Field name="Output type">
           <select value={bbOutputType} onChange={e => setBbOutputType(e.target.value)} style={sel} onFocus={focusBorder} onBlur={blurBorder}>
-            <option value="tc">tc — targets only</option>
-            <option value="tbu">tbu — targets + bounty + url</option>
+            <option value="tc">tc — targets + category</option>
+            <option value="t">t — targets only</option>
+            <option value="tdu">tdu — targets + desc + url</option>
+            <option value="tcu">tcu — targets + category + url</option>
           </select>
         </Field>
       </div>
@@ -327,6 +342,48 @@ export default function ConfigForm({ type, value, onChange }: Props) {
             <input value={bbOtp} onChange={e => setBbOtp(e.target.value)}
               placeholder='oathtool --totp -b "SECRET"' style={inp} onFocus={focusBorder} onBlur={blurBorder} />
           </Field>
+        </div>
+      )}
+
+      {bbPlatform === 'it' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Field name="API Token (-t)">
+            <input value={bbToken} onChange={e => setBbToken(e.target.value)} type="password"
+              placeholder="Intigriti API token" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+          </Field>
+          <Field name="Categories (-c)" hint="Comma separated: all, url, cidr, mobile, android, apple, device, other, wildcard">
+            <input value={bbCategories} onChange={e => setBbCategories(e.target.value)}
+              placeholder="all" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+          </Field>
+        </div>
+      )}
+
+      {bbPlatform === 'ywh' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Field name="Bearer Token (-t)" hint="From api.yeswehack.com — or use email+password below">
+            <input value={bbToken} onChange={e => setBbToken(e.target.value)} type="password"
+              placeholder="YesWeHack API token (optional if using email+password)" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+          </Field>
+          <div style={grid2}>
+            <Field name="Email (-E)">
+              <input value={bbEmail} onChange={e => setBbEmail(e.target.value)}
+                placeholder="YesWeHack email" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+            </Field>
+            <Field name="Password (-P)">
+              <input value={bbPassword} onChange={e => setBbPassword(e.target.value)} type="password"
+                placeholder="YesWeHack password" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+            </Field>
+          </div>
+          <div style={grid2}>
+            <Field name="OTP Command (-O)" hint='e.g. oathtool --totp -b "SECRET"'>
+              <input value={bbOtp} onChange={e => setBbOtp(e.target.value)}
+                placeholder='oathtool --totp -b "SECRET"' style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+            </Field>
+            <Field name="Categories (-c)" hint="all, url, mobile, android, apple, executable, other">
+              <input value={bbCategories} onChange={e => setBbCategories(e.target.value)}
+                placeholder="all" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+            </Field>
+          </div>
         </div>
       )}
 

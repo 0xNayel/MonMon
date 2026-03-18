@@ -24,7 +24,7 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 		return nil, fmt.Errorf("invalid bbscope config: %w", err)
 	}
 	if cfg.Platform == "" {
-		return nil, fmt.Errorf("platform is required (h1 or bc)")
+		return nil, fmt.Errorf("platform is required (h1, bc, it, or ywh)")
 	}
 
 	args := []string{cfg.Platform}
@@ -46,8 +46,35 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 		if cfg.OtpCommand != "" {
 			args = append(args, "--otpcommand", cfg.OtpCommand)
 		}
+	case "it":
+		if cfg.Token == "" {
+			return nil, fmt.Errorf("token (-t) is required for platform it (Intigriti)")
+		}
+		args = append(args, "-t", cfg.Token)
+		if cfg.Categories != "" {
+			args = append(args, "-c", cfg.Categories)
+		}
+	case "ywh":
+		if cfg.Token == "" && (cfg.Email == "" || cfg.Password == "") {
+			return nil, fmt.Errorf("token (-t) or email+password are required for platform ywh (YesWeHack)")
+		}
+		if cfg.Token != "" {
+			args = append(args, "-t", cfg.Token)
+		}
+		if cfg.Email != "" {
+			args = append(args, "-E", cfg.Email)
+		}
+		if cfg.Password != "" {
+			args = append(args, "-P", cfg.Password)
+		}
+		if cfg.OtpCommand != "" {
+			args = append(args, "-O", cfg.OtpCommand)
+		}
+		if cfg.Categories != "" {
+			args = append(args, "-c", cfg.Categories)
+		}
 	default:
-		return nil, fmt.Errorf("unsupported platform %q (supported: h1, bc)", cfg.Platform)
+		return nil, fmt.Errorf("unsupported platform %q (supported: h1, bc, it, ywh)", cfg.Platform)
 	}
 
 	if cfg.BountyOnly {
