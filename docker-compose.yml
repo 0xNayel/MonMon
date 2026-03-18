@@ -1,7 +1,7 @@
 services:
   monmon:
     # Use pre-built image from Docker Hub (recommended):
-    image: 0xnayel/monmon:latest
+    image: nayelxx/monmon:latest
     # Or build from source (uncomment below, comment out image above):
     # build: .
     container_name: monmon
