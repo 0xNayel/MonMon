@@ -41,7 +41,7 @@ jobs:
             echo "tags=${{ env.IMAGE_NAME }}:${VERSION},${{ env.IMAGE_NAME }}:latest" >> "$GITHUB_OUTPUT"
           else
             echo "version=dev" >> "$GITHUB_OUTPUT"
-            echo "tags=${{ env.IMAGE_NAME }}:dev" >> "$GITHUB_OUTPUT"
+            echo "tags=${{ env.IMAGE_NAME }}:dev,${{ env.IMAGE_NAME }}:latest" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build and push
