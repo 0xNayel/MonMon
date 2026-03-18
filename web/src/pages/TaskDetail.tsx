@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../api'
+import { formatDuration, formatInterval } from '../utils'
 
 interface Task {
   id: number; name: string; type: string; status: string; config: string
@@ -121,7 +122,7 @@ export default function TaskDetail() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         {task ? [
           { label: 'Type', value: task.type },
-          { label: 'Schedule', value: task.schedule_type === 'loop' ? `every ${task.schedule_value}s` : task.schedule_value },
+          { label: 'Schedule', value: task.schedule_type === 'loop' ? `every ${formatInterval(task.schedule_value)}` : task.schedule_value },
           { label: 'Total Checks', value: total.toLocaleString(), mono: true },
           { label: 'Total Changes', value: task.total_changes.toLocaleString(), highlight: task.total_changes > 0 },
         ].map((c, i) => (
@@ -212,7 +213,7 @@ export default function TaskDetail() {
                     {c.diff_removed > 0 && <span style={{ color: 'var(--critical)' }}>-{c.diff_removed}</span>}
                     {c.diff_added === 0 && c.diff_removed === 0 && <span style={{ color: 'var(--text-faint)' }}>—</span>}
                   </td>
-                  <td style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-muted)' }}>{c.duration_ms}ms</td>
+                  <td style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-muted)' }}>{formatDuration(c.duration_ms)}</td>
                   <td style={{ padding: '12px 16px', fontSize: 12, color: 'var(--text-muted)' }}>{new Date(c.created_at).toLocaleString()}</td>
                   <td style={{ padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
                     {(c.diff_added > 0 || c.diff_removed > 0) && (

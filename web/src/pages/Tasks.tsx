@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api'
 import ConfigForm from '../components/ConfigForm'
+import { formatInterval, toSeconds } from '../utils'
 
 interface Task {
   id: number; name: string; type: string; status: string
@@ -63,7 +64,8 @@ export default function Tasks() {
   const [loading, setLoading] = useState(true)
   const perPage = 20
 
-  const [form, setForm] = useState({ name: '', type: 'endpoint', schedule_type: 'loop', schedule_value: '60' })
+  const [form, setForm] = useState({ name: '', type: 'endpoint', schedule_type: 'loop', schedule_value: '1' })
+  const [scheduleUnit, setScheduleUnit] = useState<'s' | 'm' | 'h'>('m')
   const [configJson, setConfigJson] = useState('')
 
   const load = useCallback(() => {
@@ -86,9 +88,17 @@ export default function Tasks() {
   const addTask = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await api.post('/tasks', { ...form, config: configJson })
+      const payload = {
+        ...form,
+        config: configJson,
+        schedule_value: form.schedule_type === 'loop'
+          ? String(toSeconds(form.schedule_value, scheduleUnit))
+          : form.schedule_value,
+      }
+      await api.post('/tasks', payload)
       setShowAdd(false)
-      setForm({ name: '', type: 'endpoint', schedule_type: 'loop', schedule_value: '60' })
+      setForm({ name: '', type: 'endpoint', schedule_type: 'loop', schedule_value: '1' })
+      setScheduleUnit('m')
       setConfigJson('')
       load()
     } catch (err: unknown) {
@@ -190,12 +200,35 @@ export default function Tasks() {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                {form.schedule_type === 'loop' ? 'Interval (seconds)' : 'Cron Expression'}
+                {form.schedule_type === 'loop' ? 'Interval' : 'Cron Expression'}
               </label>
-              <input value={form.schedule_value} onChange={e => setForm({ ...form, schedule_value: e.target.value })}
-                placeholder={form.schedule_type === 'loop' ? '60' : '*/5 * * * *'} style={formInp} required
-                onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
-                onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
+              {form.schedule_type === 'loop' ? (
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <input
+                    type="number" min="1" value={form.schedule_value}
+                    onChange={e => setForm({ ...form, schedule_value: e.target.value })}
+                    style={{ ...formInp, flex: 1 }} required
+                    onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
+                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
+                  />
+                  <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, overflow: 'hidden' }}>
+                    {(['s', 'm', 'h'] as const).map(u => (
+                      <button key={u} type="button" onClick={() => setScheduleUnit(u)} style={{
+                        padding: '0 14px', height: '100%', border: 'none', cursor: 'pointer',
+                        fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600,
+                        transition: 'all 0.15s',
+                        background: scheduleUnit === u ? 'var(--accent-solid)' : 'transparent',
+                        color: scheduleUnit === u ? '#fff' : 'var(--text-muted)',
+                      }}>{u}</button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <input value={form.schedule_value} onChange={e => setForm({ ...form, schedule_value: e.target.value })}
+                  placeholder="*/5 * * * *" style={formInp} required
+                  onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
+                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
+              )}
             </div>
           </div>
           <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, marginBottom: 16 }}>
@@ -303,7 +336,7 @@ export default function Tasks() {
                   </Badge>
                 </td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-muted)' }}>
-                  {t.schedule_type === 'loop' ? `${t.schedule_value}s` : t.schedule_value}
+                  {t.schedule_type === 'loop' ? formatInterval(t.schedule_value) : t.schedule_value}
                 </td>
                 <td style={{ padding: '12px 16px', fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text-primary)' }}>
                   {t.total_checks.toLocaleString()}

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api'
+import { formatDuration } from '../utils'
 
 interface Stats {
   tasks: { total: number; active: number; paused: number; error: number }
@@ -186,7 +187,7 @@ export default function Dashboard() {
                     {a.error_msg?.startsWith('timeout')
                       ? <span style={{ color: 'var(--critical)', fontWeight: 600 }}>killed</span>
                       : <span style={{ color: a.duration_ms > 5000 ? 'var(--warn)' : 'var(--text-muted)' }}>
-                          {a.duration_ms >= 1000 ? `${(a.duration_ms / 1000).toFixed(1)}s` : `${a.duration_ms}ms`}
+                          {formatDuration(a.duration_ms)}
                         </span>
                     }
                   </td>
