@@ -1,4 +1,7 @@
+import { useRef, useState, useEffect } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useTheme } from '../context/ThemeContext'
+import { themes, type Theme } from '../themes'
 
 const nav = [
   {
@@ -44,8 +47,192 @@ const nav = [
   },
 ]
 
+// ── Mini theme preview card ────────────────────────────────────────────────────
+function ThemeCard({ t, active, onClick }: { t: Theme; active: boolean; onClick: (e: React.MouseEvent) => void }) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+        borderRadius: 12, outline: 'none',
+        transform: hovered && !active ? 'translateY(-2px)' : 'none',
+        transition: 'transform 0.2s',
+      }}
+    >
+      <div style={{
+        width: 136,
+        borderRadius: 12,
+        overflow: 'hidden',
+        border: active
+          ? `2px solid ${t.swatch.accent}`
+          : hovered
+            ? `2px solid ${t.swatch.accent}55`
+            : '2px solid rgba(255,255,255,0.07)',
+        boxShadow: active
+          ? `0 0 0 3px ${t.swatch.accentDim}, 0 8px 24px rgba(0,0,0,0.4)`
+          : hovered
+            ? `0 4px 16px rgba(0,0,0,0.3)`
+            : '0 2px 8px rgba(0,0,0,0.2)',
+        transition: 'all 0.2s',
+      }}>
+        {/* Mini app preview */}
+        <div style={{ height: 72, background: t.swatch.bg, display: 'flex', position: 'relative' }}>
+          {/* Mini sidebar */}
+          <div style={{
+            width: 26, height: '100%', flexShrink: 0,
+            background: t.swatch.surface,
+            borderRight: `1px solid ${t.swatch.accent}22`,
+            display: 'flex', flexDirection: 'column', gap: 4,
+            padding: '8px 5px',
+          }}>
+            {/* Eye dot */}
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: t.swatch.accent, opacity: 0.9, margin: '0 auto 4px' }} />
+            {[1, 0.4, 0.4, 0.3].map((op, i) => (
+              <div key={i} style={{ height: 3, borderRadius: 2, background: t.swatch.accent, opacity: op * 0.7 }} />
+            ))}
+          </div>
+          {/* Mini main area */}
+          <div style={{ flex: 1, padding: '8px 7px', display: 'flex', flexDirection: 'column', gap: 5 }}>
+            {/* Accent header bar */}
+            <div style={{ height: 5, borderRadius: 3, background: t.swatch.accent, width: '55%' }} />
+            {/* Content lines */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {[80, 60, 70, 45].map((w, i) => (
+                <div key={i} style={{
+                  height: 3, borderRadius: 2,
+                  background: i === 0 ? `${t.swatch.accent}55` : `${t.swatch.accent}18`,
+                  width: `${w}%`,
+                }} />
+              ))}
+            </div>
+            {/* Mini card */}
+            <div style={{
+              marginTop: 2, borderRadius: 4, padding: '3px 5px',
+              background: t.swatch.accentDim,
+              borderLeft: `2px solid ${t.swatch.accent}`,
+              width: '75%',
+            }}>
+              <div style={{ height: 3, borderRadius: 2, background: t.swatch.accent, width: '60%' }} />
+            </div>
+          </div>
+          {/* Active checkmark */}
+          {active && (
+            <div style={{
+              position: 'absolute', top: 6, right: 6,
+              width: 18, height: 18, borderRadius: '50%',
+              background: t.swatch.accent,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: `0 0 8px ${t.swatch.accentDim}`,
+            }}>
+              <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="#fff" strokeWidth="3">
+                <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          )}
+        </div>
+        {/* Label */}
+        <div style={{
+          padding: '8px 10px',
+          background: t.swatch.surface,
+          borderTop: `1px solid ${t.swatch.accent}18`,
+        }}>
+          <div style={{
+            fontSize: 11, fontWeight: 700, letterSpacing: '0.07em',
+            fontFamily: 'var(--font-mono)',
+            color: active ? t.swatch.accent : t.id === 'frost' ? '#0F172A' : '#E0E7FF',
+          }}>{t.name}</div>
+          <div style={{
+            fontSize: 10, marginTop: 1,
+            color: t.id === 'frost' ? '#64748B' : 'rgba(255,255,255,0.3)',
+          }}>{t.tagline}</div>
+        </div>
+      </div>
+    </button>
+  )
+}
+
+// ── Theme Picker panel ─────────────────────────────────────────────────────────
+function ThemePicker({ onClose, anchorRef }: {
+  onClose: () => void
+  anchorRef: React.RefObject<HTMLButtonElement | null>
+}) {
+  const { theme, setTheme } = useTheme()
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        panelRef.current && !panelRef.current.contains(e.target as Node) &&
+        anchorRef.current && !anchorRef.current.contains(e.target as Node)
+      ) { onClose() }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [onClose, anchorRef])
+
+  const handleSelect = (id: string, e: React.MouseEvent) => {
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const x = rect.left + rect.width / 2
+    const y = rect.top + rect.height / 2
+    setTheme(id, x, y)
+    onClose()
+  }
+
+  return (
+    <div ref={panelRef} style={{
+      position: 'fixed',
+      bottom: 56,
+      left: 14,
+      zIndex: 1000,
+      background: 'var(--bg-surface)',
+      border: '1px solid var(--border)',
+      borderRadius: 16,
+      padding: '18px 16px',
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+      boxShadow: '0 -4px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)',
+      animation: 'picker-in 0.2s cubic-bezier(0.4,0,0.2,1)',
+      transformOrigin: 'bottom left',
+    }}>
+      <style>{`
+        @keyframes picker-in {
+          from { opacity: 0; transform: scale(0.92) translateY(8px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      `}</style>
+      <div style={{
+        fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)',
+        letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 14,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <span>Theme</span>
+        <span style={{ color: 'var(--accent)', fontSize: 10 }}>{theme.name}</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 136px)', gap: 10 }}>
+        {themes.map(t => (
+          <ThemeCard
+            key={t.id}
+            t={t}
+            active={theme.id === t.id}
+            onClick={(e) => handleSelect(t.id, e)}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Layout ─────────────────────────────────────────────────────────────────────
 export default function Layout() {
   const navigate = useNavigate()
+  const { theme } = useTheme()
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const paletteRef = useRef<HTMLButtonElement>(null)
+
   const logout = () => { localStorage.removeItem('monmon_token'); navigate('/login') }
 
   return (
@@ -59,15 +246,15 @@ export default function Layout() {
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
+        position: 'relative',
       }}>
         {/* Brand */}
         <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-            {/* Monster eye */}
             <div style={{
               width: 28, height: 28, borderRadius: '50%',
-              background: 'radial-gradient(circle at 40% 40%, #818CF8, #312e81)',
-              boxShadow: '0 0 16px rgba(99,102,241,0.5)',
+              background: theme.eyeGradient,
+              boxShadow: `0 0 16px var(--accent-glow)`,
               animation: 'breathe 2s ease-in-out infinite',
               flexShrink: 0,
             }} />
@@ -94,7 +281,7 @@ export default function Layout() {
                 transition: 'all 0.15s',
                 background: isActive ? 'var(--accent-dim)' : 'transparent',
                 color: isActive ? 'var(--accent)' : 'var(--text-muted)',
-                border: isActive ? '1px solid rgba(99,102,241,0.2)' : '1px solid transparent',
+                border: isActive ? '1px solid var(--accent-glow)' : '1px solid transparent',
               })}>
               {n.icon}
               {n.label}
@@ -103,7 +290,40 @@ export default function Layout() {
         </nav>
 
         {/* Footer */}
-        <div style={{ padding: '12px 14px', borderTop: '1px solid var(--border)' }}>
+        <div style={{ padding: '12px 14px', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* Theme picker button */}
+          <button
+            ref={paletteRef}
+            onClick={() => setPickerOpen(v => !v)}
+            style={{
+              width: '100%', textAlign: 'left', cursor: 'pointer',
+              fontSize: 12, fontFamily: 'var(--font-body)', padding: '6px 0',
+              display: 'flex', alignItems: 'center', gap: 8,
+              transition: 'color 0.15s', background: 'none', border: 'none',
+              color: pickerOpen ? 'var(--accent)' : 'var(--text-muted)',
+            }}
+            onMouseEnter={e => { if (!pickerOpen) e.currentTarget.style.color = 'var(--text-primary)' }}
+            onMouseLeave={e => { if (!pickerOpen) e.currentTarget.style.color = 'var(--text-muted)' }}
+          >
+            {/* Palette icon */}
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
+              <path d="M12 2C6.48 2 2 6.48 2 12c0 5.52 4.48 10 10 10 1.1 0 2-.9 2-2v-.5c0-.55.45-1 1-1h1c3.31 0 6-2.69 6-6C22 6.48 17.52 2 12 2z" strokeLinecap="round"/>
+              <circle cx="7.5" cy="13.5" r="1" fill="currentColor" stroke="none"/>
+              <circle cx="9.5" cy="9.5" r="1" fill="currentColor" stroke="none"/>
+              <circle cx="14.5" cy="9.5" r="1" fill="currentColor" stroke="none"/>
+              <circle cx="16.5" cy="13.5" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+            <span style={{ flex: 1 }}>Theme</span>
+            {/* Active theme swatch dot */}
+            <span style={{
+              width: 10, height: 10, borderRadius: '50%',
+              background: theme.swatch.accent,
+              boxShadow: `0 0 6px ${theme.swatch.accentDim}`,
+              flexShrink: 0,
+            }} />
+          </button>
+
+          {/* Sign out */}
           <button onClick={logout} style={{
             width: '100%', textAlign: 'left', background: 'none', border: 'none',
             cursor: 'pointer', fontSize: 12, color: 'var(--text-muted)',
@@ -119,6 +339,14 @@ export default function Layout() {
             Sign out
           </button>
         </div>
+
+        {/* Theme picker panel */}
+        {pickerOpen && (
+          <ThemePicker
+            onClose={() => setPickerOpen(false)}
+            anchorRef={paletteRef}
+          />
+        )}
       </aside>
 
       {/* Main */}

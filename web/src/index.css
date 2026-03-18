@@ -45,7 +45,7 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
-  opacity: 0.4;
+  opacity: var(--noise-opacity, 0.4);
 }
 
 #root { position: relative; z-index: 1; }
@@ -133,26 +133,34 @@ select {
 }
 
 select option {
-  background-color: #0D0F14;
-  color: #E8EAF0;
+  background-color: var(--select-option-bg, #0D0F14);
+  color: var(--select-option-color, #E8EAF0);
   font-family: 'Outfit', system-ui, sans-serif;
 }
 
 select option:checked {
-  background-color: rgba(99,102,241,0.25);
-  color: #818CF8;
+  background-color: var(--accent-dim);
+  color: var(--accent);
 }
 
 /* ── Scrollbar ───────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb, rgba(255,255,255,0.1)); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover, rgba(255,255,255,0.18)); }
 
 /* ── Diff colors ─────────────────────────────────── */
-.diff-added   { background: rgba(99,102,241,0.08); color: #818CF8; }
-.diff-removed { background: rgba(255,59,92,0.1);  color: #FF3B5C; }
+.diff-added   { background: var(--diff-added-bg);    color: var(--diff-added-color); }
+.diff-removed { background: var(--diff-removed-bg);  color: var(--diff-removed-color); }
 .diff-header  { color: var(--text-muted); font-style: italic; }
+
+/* ── View Transitions (theme switcher circle-reveal) ─ */
+@keyframes vt-reveal {
+  from { clip-path: circle(0% at var(--vt-x, 50%) var(--vt-y, 50%)); }
+  to   { clip-path: circle(150% at var(--vt-x, 50%) var(--vt-y, 50%)); }
+}
+::view-transition-old(root) { animation: none; }
+::view-transition-new(root) { animation: vt-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1); }
 
 /* ── Reduced motion ──────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
