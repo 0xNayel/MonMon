@@ -56,9 +56,21 @@ func (s *Server) handleVersionCheck(c *gin.Context) {
 			"current":          s.Version,
 			"latest":           s.Version,
 			"update_available": false,
+			"docker":           updater.IsDocker(),
 			"error":            err.Error(),
 		})
 		return
 	}
-	c.JSON(http.StatusOK, info)
+	resp := gin.H{
+		"current":          info.Current,
+		"latest":           info.Latest,
+		"update_available": info.UpdateAvail,
+		"release_url":      info.ReleaseURL,
+		"release_notes":    info.ReleaseBody,
+		"docker":           updater.IsDocker(),
+	}
+	if info.DownloadURL != "" {
+		resp["download_url"] = info.DownloadURL
+	}
+	c.JSON(http.StatusOK, resp)
 }

@@ -96,8 +96,24 @@ func CheckLatest(currentVersion string) (*VersionInfo, error) {
 	return info, nil
 }
 
+// IsDocker returns true if running inside a Docker container.
+func IsDocker() bool {
+	if _, err := os.Stat("/.dockerenv"); err == nil {
+		return true
+	}
+	return false
+}
+
 // SelfUpdate checks for and applies the latest update.
 func SelfUpdate(currentVersion string) error {
+	if IsDocker() {
+		fmt.Println("Running inside Docker — binary self-update is not supported.")
+		fmt.Println()
+		fmt.Println("To update, run on the host:")
+		fmt.Println("  docker compose pull && docker compose up -d")
+		return nil
+	}
+
 	fmt.Printf("MonMon v%s — checking for updates...\n", currentVersion)
 
 	info, err := CheckLatest(currentVersion)
