@@ -37,40 +37,40 @@ Single binary. Embedded dashboard. Zero external dependencies.
 
 ## Screenshots
 
-<!-- SCREENSHOT: Dashboard overview -->
+<!-- Dashboard — Phantom theme -->
 <p align="center">
-  <img src="" width="800" alt="MonMon Dashboard"/>
-  <br/><sub>Dashboard — real-time system overview with animated stats</sub>
+  <img src="screenshots/dashboard.png" width="800" alt="MonMon Dashboard"/>
+  <br/><sub>Dashboard — real-time stats (active tasks, changes, errors) and recent activity feed</sub>
 </p>
 
-<!-- SCREENSHOT: Task list -->
+<!-- Tasks — task creation form + task list -->
 <p align="center">
-  <img src="" width="800" alt="MonMon Tasks"/>
-  <br/><sub>Tasks — manage all monitoring jobs with filters, search, and inline actions</sub>
+  <img src="screenshots/tasks.png" width="800" alt="MonMon Tasks"/>
+  <br/><sub>Tasks — create and manage monitoring jobs with bbscope, endpoint, subdomain, and command types</sub>
 </p>
 
-<!-- SCREENSHOT: Task detail + check history -->
+<!-- Task Detail — check history with edit + run -->
 <p align="center">
-  <img src="" width="800" alt="MonMon Task Detail"/>
-  <br/><sub>Task Detail — full check history with pagination, status filters, and diff links</sub>
+  <img src="screenshots/task-detail.png" width="800" alt="MonMon Task Detail"/>
+  <br/><sub>Task Detail — full check history with version tracking, diff links, inline edit, and manual run</sub>
 </p>
 
-<!-- SCREENSHOT: Diff viewer -->
+<!-- Diff Viewer — Terminal theme -->
 <p align="center">
-  <img src="" width="800" alt="MonMon Diff Viewer"/>
-  <br/><sub>Diff Viewer — unified diffs with syntax highlighting, collapse/expand, and first-time detection</sub>
+  <img src="screenshots/diff.png" width="800" alt="MonMon Diff Viewer"/>
+  <br/><sub>Diff Viewer — unified diffs with line numbers, added/removed highlighting, and change filters</sub>
 </p>
 
-<!-- SCREENSHOT: Alerts configuration -->
+<!-- Alerts — Crimson theme -->
 <p align="center">
-  <img src="" width="800" alt="MonMon Alerts"/>
-  <br/><sub>Alerts — per-task or global, multi-provider, custom message templates</sub>
+  <img src="screenshots/alerts.png" width="800" alt="MonMon Alerts"/>
+  <br/><sub>Alerts — multi-provider (Slack, Discord, Telegram, Webhook), custom Go templates, keyword filters</sub>
 </p>
 
-<!-- SCREENSHOT: Theme picker -->
+<!-- System + Theme Picker — Frost theme -->
 <p align="center">
-  <img src="" width="800" alt="MonMon Themes"/>
-  <br/><sub>Themes — 6 built-in themes with live preview and smooth transitions</sub>
+  <img src="screenshots/themes-system.png" width="800" alt="MonMon Themes & System"/>
+  <br/><sub>System & Themes — external tool status check + 6 built-in themes with live preview</sub>
 </p>
 
 ---
@@ -82,7 +82,7 @@ Single binary. Embedded dashboard. Zero external dependencies.
 | **Monitoring Modes** | `command` · `endpoint` · `subdomain` · `bbscope` — four task types covering shell output, HTTP responses, subdomain discovery, and bug bounty scope |
 | **Smart Diff Engine** | Unified diffs with per-URL breakdown for bulk endpoints. Filters: All / Changed / First-time. Every new line is checked against full task history, not just the previous run |
 | **Subdomain Pipeline** | `subfinder -all` → `httpx` per domain, threaded execution, stable keyed output — reordering never creates false positives |
-| **Scope Monitoring** | HackerOne + Bugcrowd via `bbscope`. Diff scope expansions instantly |
+| **Scope Monitoring** | HackerOne, Bugcrowd, Intigriti, YesWeHack via `bbscope`. Diff scope expansions instantly |
 | **Bulk Endpoints** | Monitor multiple URLs in a single task. Each URL gets its own diff section. Modes: `body` · `full` · `metadata` · `regex` |
 | **Alerts** | Slack, Discord, Telegram, custom webhook. Per-task or global scope. Keyword filter. Custom message templates. Test button per config |
 | **Dashboard** | React SPA embedded in the binary. Task manager, diff viewer with collapse + search, real-time log stream (WebSocket), animated stats |
@@ -243,7 +243,14 @@ Multiple URLs per task — each gets its own diff section.
 }
 ```
 
-Platforms: `h1` (HackerOne) · `bc` (Bugcrowd). Get alerted the moment a scope expansion drops.
+Platforms: `h1` (HackerOne) · `bc` (Bugcrowd) · `it` (Intigriti) · `ywh` (YesWeHack). Get alerted the moment a scope expansion drops.
+
+| Platform | Auth | Extra flags |
+|----------|------|-------------|
+| `h1` | `-t` token, `-u` username | |
+| `bc` | `-E` email, `-P` password | `--otpcommand` for OTP |
+| `it` | `-t` API token | `-c` categories (url, cidr, mobile, etc.) |
+| `ywh` | `-t` token or `-E`/`-P` email+password | `-O` OTP command, `-c` categories |
 
 ---
 
