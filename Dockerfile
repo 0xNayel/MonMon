@@ -22,7 +22,7 @@ RUN CGO_ENABLED=1 go build -ldflags "-s -w" -o /monmon ./cmd/monmon/
 
 # Runtime image — minimal Alpine
 FROM alpine:3.19
-RUN apk add --no-cache ca-certificates bash
+RUN apk add --no-cache ca-certificates bash oath-toolkit-oathtool
 
 COPY --from=go-build /monmon /usr/local/bin/monmon
 COPY --from=go-build /go/bin/bbscope   /usr/local/bin/bbscope

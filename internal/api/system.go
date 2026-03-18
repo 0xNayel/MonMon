@@ -22,6 +22,7 @@ func (s *Server) handleToolsCheck(c *gin.Context) {
 		{"subfinder", []string{"subdomain"}},
 		{"httpx", []string{"subdomain"}},
 		{"bbscope", []string{"bbscope"}},
+		{"oathtool", []string{"bbscope"}},
 	}
 
 	tools := make([]toolEntry, 0, len(candidates))
