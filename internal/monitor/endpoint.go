@@ -166,8 +166,12 @@ func (m *EndpointMonitor) fetchURL(
 		output = sb.String()
 
 	case "metadata":
+		fields := cfg.MetadataFields
+		if len(fields) == 0 {
+			fields = []string{"status_code", "content_length", "title"}
+		}
 		metaOut := map[string]any{}
-		for _, field := range cfg.MetadataFields {
+		for _, field := range fields {
 			switch field {
 			case "status_code":
 				metaOut["status_code"] = resp.StatusCode
@@ -177,7 +181,7 @@ func (m *EndpointMonitor) fetchURL(
 				metaOut["title"] = extractTitle(string(respBody))
 			}
 		}
-		jsonBytes, _ := json.Marshal(metaOut)
+		jsonBytes, _ := json.MarshalIndent(metaOut, "", "  ")
 		output = string(jsonBytes)
 
 	case "regex":

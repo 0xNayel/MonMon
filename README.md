@@ -32,48 +32,27 @@ Changes monitoring for bug bounty hunters</h3>
 
 ---
 
-MonMon runs your recon on autopilot. Point it at targets, set intervals, and get alerted the second anything changes — new subdomain, scope expansion, endpoint diff, command output shift. Everything is diffed, versioned, and delivered to Telegram, Slack, or Discord before anyone else notices.
+<!-- MonMon -->
+<p align="center">
+  <img src="screenshots/Monmon.png" width="800" alt="MonMon"/>
+</p>
 
-Single binary. Embedded dashboard. Zero external dependencies.
+Monster Monitoring (MonMon) runs your recon on autopilot. Point it at targets, set intervals, and get alerted once anything changed. new subdomain, scope expansion, endpoint diff, command output shift. Everything is diffed, versioned, and delivered to Telegram, Slack, or Discord before anyone else notices.
+
+Easy deploy & Easy use
 
 ---
 
-## Screenshots
-
-<!-- Dashboard — Phantom theme -->
-<p align="center">
-  <img src="screenshots/dashboard.png" width="800" alt="MonMon Dashboard"/>
-  <br/><sub>Dashboard — real-time stats (active tasks, changes, errors) and recent activity feed</sub>
-</p>
-
-<!-- Tasks — task creation form + task list -->
-<p align="center">
-  <img src="screenshots/tasks.png" width="800" alt="MonMon Tasks"/>
-  <br/><sub>Tasks — create and manage monitoring jobs with bbscope, endpoint, subdomain, and command types</sub>
-</p>
-
-<!-- Task Detail — check history with edit + run -->
-<p align="center">
-  <img src="screenshots/task-detail.png" width="800" alt="MonMon Task Detail"/>
-  <br/><sub>Task Detail — full check history with version tracking, diff links, inline edit, and manual run</sub>
-</p>
-
-<!-- Diff Viewer — Terminal theme -->
+<!-- Diff Viewer -->
 <p align="center">
   <img src="screenshots/diff.png" width="800" alt="MonMon Diff Viewer"/>
   <br/><sub>Diff Viewer — unified diffs with line numbers, added/removed highlighting, and change filters</sub>
 </p>
 
-<!-- Alerts — Crimson theme -->
+<!-- Alerts -->
 <p align="center">
   <img src="screenshots/alerts.png" width="800" alt="MonMon Alerts"/>
   <br/><sub>Alerts — multi-provider (Slack, Discord, Telegram, Webhook), custom Go templates, keyword filters</sub>
-</p>
-
-<!-- System + Theme Picker — Frost theme -->
-<p align="center">
-  <img src="screenshots/themes-system.png" width="800" alt="MonMon Themes & System"/>
-  <br/><sub>System & Themes — external tool status check + 6 built-in themes with live preview</sub>
 </p>
 
 ---
@@ -90,7 +69,6 @@ Single binary. Embedded dashboard. Zero external dependencies.
 | **Alerts** | Slack, Discord, Telegram, custom webhook. Per-task or global scope. Keyword filter. Custom message templates. Test button per config |
 | **Dashboard** | React SPA embedded in the binary. Task manager, diff viewer with collapse + search, real-time log stream (WebSocket), animated stats |
 | **Multi-Theme UI** | 6 themes (Phantom, Midnight, Terminal, Obsidian, Crimson, Frost) with live preview, View Transitions API, and localStorage persistence |
-| **Self-Update** | `monmon update` checks GitHub releases and self-updates the binary |
 | **Single Binary** | SQLite (WAL), embedded frontend, JWT auth, auto-generated secret. No external services |
 
 ---
