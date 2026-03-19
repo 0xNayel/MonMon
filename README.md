@@ -11,7 +11,6 @@
 <h3 align="center">Continuous recon & change monitoring for bug bounty hunters</h3>
 
 <p align="center">
-  <a href="https://github.com/0xNayel/MonMon/releases"><img src="https://img.shields.io/github/v/release/0xNayel/MonMon?color=6366f1&label=release&style=flat-square" alt="release"/></a>
   <a href="https://github.com/0xNayel/MonMon/blob/main/LICENSE"><img src="https://img.shields.io/github/license/0xNayel/MonMon?color=6366f1&style=flat-square" alt="license"/></a>
   <a href="https://golang.org/"><img src="https://img.shields.io/badge/go-1.22%2B-6366f1?style=flat-square" alt="go"/></a>
   <a href="https://github.com/0xNayel/MonMon/stargazers"><img src="https://img.shields.io/github/stars/0xNayel/MonMon?style=flat-square&color=6366f1" alt="stars"/></a>
@@ -24,7 +23,7 @@
   <a href="#task-types">Tasks</a> &bull;
   <a href="#alerts">Alerts</a> &bull;
   <a href="#cli">CLI</a> &bull;
-  <a href="#api-reference">API</a>
+  <a href="docs/API.md">API</a>
 </p>
 
 ---
@@ -141,12 +140,6 @@ Open **http://localhost:8888** — requires Go 1.22+.
 monmon update
 ```
 
-Or manually:
-
-```bash
-go install github.com/0xNayel/MonMon/cmd/monmon@latest
-```
-
 ---
 
 ### Build from source
@@ -170,10 +163,10 @@ go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 # httpx
 go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 
-# bbscope (use v1, NOT v2)
+# bbscope
 go install github.com/sw33tLie/bbscope@latest
 
-# oathtool (for bbscope HackerOne OTP) — install via package manager
+# oathtool (for bbscope OTP) — install via package manager
 # Debian/Ubuntu: apt install oathtool
 # macOS: brew install oath-toolkit
 # Alpine: apk add oath-toolkit-oathtool
@@ -270,12 +263,11 @@ Configured entirely from the dashboard UI.
 | `{{.TaskName}}` | Task name |
 | `{{.TaskType}}` | Task type |
 | `{{.CheckStatus}}` | Check result status |
-| `{{.Version}}` | Check version number |
+| `{{.CheckVersion}}` | Check version number |
 | `{{.DurationMs}}` | Execution time in ms |
 | `{{.DiffAdded}}` | Lines added |
 | `{{.DiffRemoved}}` | Lines removed |
 | `{{.ErrorMsg}}` | Error message (if any) |
-| `{{.Timestamp}}` | Check timestamp |
 
 ---
 
@@ -335,70 +327,6 @@ monmon logs                                # View recent logs
 
 ---
 
-## API Reference
-
-All routes except `/api/login` require `Authorization: Bearer <jwt>`.
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/login` | Authenticate → JWT |
-| `GET` | `/api/tasks` | List tasks (filter: `type`, `status`, `search`, `sort`, `order`, `page`, `per_page`) |
-| `POST` | `/api/tasks` | Create task |
-| `GET` | `/api/tasks/:id` | Get task |
-| `PUT` | `/api/tasks/:id` | Update task |
-| `DELETE` | `/api/tasks/:id` | Delete task + checks |
-| `POST` | `/api/tasks/:id/pause` | Pause task |
-| `POST` | `/api/tasks/:id/resume` | Resume task |
-| `POST` | `/api/tasks/:id/run` | Trigger immediate run |
-| `GET` | `/api/tasks/:id/checks` | Check history (filter: `status`, `order`, `page`, `per_page`) |
-| `GET` | `/api/checks/:id` | Check metadata |
-| `GET` | `/api/checks/:id/output` | Raw output text |
-| `GET` | `/api/checks/:id/diff` | Structured diff |
-| `GET` | `/api/checks/compare` | Compare any two checks (`from`, `to`) |
-| `GET` | `/api/alerts` | List alert configs |
-| `POST` | `/api/alerts` | Create alert config |
-| `PUT` | `/api/alerts/:id` | Update alert config |
-| `DELETE` | `/api/alerts/:id` | Delete alert config |
-| `POST` | `/api/alerts/:id/test` | Send test alert |
-| `GET` | `/api/logs` | Query logs (`level`, `source`, `task_id`, `page`) |
-| `WS` | `/api/ws/logs` | Real-time log stream |
-| `GET` | `/api/stats` | Dashboard stats |
-| `GET` | `/api/system/tools` | Tool availability check |
-| `GET` | `/api/system/version` | Current + latest version info |
-
----
-
-## Architecture
-
-```
-MonMon/
-├── cmd/monmon/main.go            # CLI entry + Cobra commands
-├── internal/
-│   ├── api/                      # Gin REST handlers + WebSocket
-│   ├── alert/                    # Multi-provider alert delivery
-│   ├── auth/                     # JWT + bcrypt + env-based admin
-│   ├── config/                   # Viper config loading
-│   ├── db/                       # SQLite init + auto-migrations
-│   ├── diff/                     # Unified diff engine
-│   ├── logger/                   # Zerolog + DB writer
-│   ├── models/                   # GORM models
-│   ├── monitor/
-│   │   ├── command.go            # Shell command executor
-│   │   ├── endpoint.go           # HTTP fetcher (bulk multi-URL)
-│   │   ├── subdomain.go          # subfinder → httpx pipeline
-│   │   └── bbscope.go            # Bug bounty scope monitor
-│   ├── scheduler/                # Cron + loop scheduling
-│   ├── updater/                  # Self-update from GitHub releases
-│   └── webui/                    # Embedded React SPA (go:embed)
-├── web/                          # React + TypeScript source
-├── configs/                      # Example YAML configs
-├── Dockerfile                    # Multi-stage (node → go → alpine)
-├── docker-compose.yml
-└── Makefile
-```
-
----
-
 ## Running in Background
 
 **Docker** (recommended):
@@ -417,6 +345,12 @@ tmux new -d -s monmon 'monmon server'
 ```bash
 nohup monmon server > /dev/null 2>&1 &
 ```
+
+---
+
+## Documentation
+
+Full API reference available in **[docs/API.md](docs/API.md)**. Architecture details in **[ARCHITECTURE.md](ARCHITECTURE.md)**.
 
 ---
 
