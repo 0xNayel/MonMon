@@ -93,9 +93,10 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 	}
 
 	// Sort lines for stable diffs (scope order may vary between API calls).
+	// Filter out bbscope log lines (time="..." level=...) that cause false diffs.
 	var lines []string
 	for _, l := range strings.Split(strings.TrimSpace(out), "\n") {
-		if l = strings.TrimSpace(l); l != "" {
+		if l = strings.TrimSpace(l); l != "" && !strings.HasPrefix(l, `time="`) {
 			lines = append(lines, l)
 		}
 	}
