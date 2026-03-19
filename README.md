@@ -5,9 +5,7 @@
   | |\/| |/ _ \| '_ \| |\/| |/ _ \| '_ \
   | |  | | (_) | | | | |  | | (_) | | | |
   |_|  |_|\___/|_| |_|_|  |_|\___/|_| |_|
-
-   
-  Monster Monitoring by 0xNayel
+Monster Monitoring by 0xNayel
 </pre>
 </p>
 
