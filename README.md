@@ -5,10 +5,14 @@
   | |\/| |/ _ \| '_ \| |\/| |/ _ \| '_ \
   | |  | | (_) | | | | |  | | (_) | | | |
   |_|  |_|\___/|_| |_|_|  |_|\___/|_| |_|
+  Monster Monitoring by 0xNayel
 </pre>
 </p>
 
-<h3 align="center">Continuous recon & change monitoring for bug bounty hunters</h3>
+<h3 align="center">
+Monster Monitoring
+
+Changes monitoring for bug bounty hunters</h3>
 
 <p align="center">
   <a href="https://github.com/0xNayel/MonMon/blob/main/LICENSE"><img src="https://img.shields.io/github/license/0xNayel/MonMon?color=6366f1&style=flat-square" alt="license"/></a>
