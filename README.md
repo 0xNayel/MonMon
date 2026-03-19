@@ -1,11 +1,11 @@
 <p align="center">
-  
+<pre align="">
    __  __             __  __
   |  \/  | ___  _ __ |  \/  | ___  _ __
   | |\/| |/ _ \| '_ \| |\/| |/ _ \| '_ \
   | |  | | (_) | | | | |  | | (_) | | | |
   |_|  |_|\___/|_| |_|_|  |_|\___/|_| |_|
-  
+</pre>
 </p>
 
 <h3 align="center">Continuous recon & change monitoring for bug bounty hunters</h3>
