@@ -69,7 +69,6 @@ Easy deploy & Easy use
 | **Alerts** | Slack, Discord, Telegram, custom webhook. Per-task or global scope. Keyword filter. Custom message templates. Test button per config |
 | **Dashboard** | React SPA embedded in the binary. Task manager, diff viewer with collapse + search, real-time log stream (WebSocket), animated stats |
 | **Multi-Theme UI** | 6 themes (Phantom, Midnight, Terminal, Obsidian, Crimson, Frost) with live preview, View Transitions API, and localStorage persistence |
-| **Single Binary** | SQLite (WAL), embedded frontend, JWT auth, auto-generated secret. No external services |
 
 ---
 
