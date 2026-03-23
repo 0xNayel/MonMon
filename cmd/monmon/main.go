@@ -32,7 +32,7 @@ const banner = `
   | |\/| |/ _ \| '_ \| |\/| |/ _ \| '_ \
   | |  | | (_) | | | | |  | | (_) | | | |
   |_|  |_|\___/|_| |_|_|  |_|\___/|_| |_|
-  Monster Monitoring by 0xNayel
+  Monitoring Monster by 0xNayel
 `
 
 var (

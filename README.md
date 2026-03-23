@@ -5,12 +5,12 @@
   | |\/| |/ _ \| '_ \| |\/| |/ _ \| '_ \
   | |  | | (_) | | | | |  | | (_) | | | |
   |_|  |_|\___/|_| |_|_|  |_|\___/|_| |_|
-Monster Monitoring by 0xNayel
+Monitoring Monster by 0xNayel
 </pre>
 </p>
 
 <h3 align="center">
-Monster Monitoring
+Monitoring Monster
 
 Changes monitoring for bug bounty hunters</h3>
 
@@ -37,7 +37,7 @@ Changes monitoring for bug bounty hunters</h3>
   <img src="screenshots/monmon.png" width="800" alt="MonMon"/>
 </p>
 
-Monster Monitoring (MonMon) runs your recon on autopilot. Point it at targets, set intervals, and get alerted once anything changed. new subdomain, scope expansion, endpoint diff, command output shift. Everything is diffed, versioned, and delivered to Telegram, Slack, or Discord before anyone else notices.
+Monitoring Monster (MonMon) runs your recon on autopilot. Point it at targets, set intervals, and get alerted once anything changed. new subdomain, scope expansion, endpoint diff, command output shift. Everything is diffed, versioned, and delivered to Telegram, Slack, or Discord before anyone else notices.
 
 Easy deploy & Easy use
 
