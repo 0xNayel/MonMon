@@ -34,7 +34,7 @@ Changes monitoring for bug bounty hunters</h3>
 
 <!-- MonMon -->
 <p align="center">
-  <img src="screenshots/Monmon.png" width="800" alt="MonMon"/>
+  <img src="screenshots/monmon.png" width="800" alt="MonMon"/>
 </p>
 
 Monster Monitoring (MonMon) runs your recon on autopilot. Point it at targets, set intervals, and get alerted once anything changed. new subdomain, scope expansion, endpoint diff, command output shift. Everything is diffed, versioned, and delivered to Telegram, Slack, or Discord before anyone else notices.
