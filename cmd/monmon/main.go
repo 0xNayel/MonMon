@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -14,6 +17,7 @@ import (
 	"github.com/0xNayel/MonMon/internal/auth"
 	"github.com/0xNayel/MonMon/internal/config"
 	"github.com/0xNayel/MonMon/internal/db"
+	"github.com/0xNayel/MonMon/internal/diff"
 	"github.com/0xNayel/MonMon/internal/logger"
 	"github.com/0xNayel/MonMon/internal/models"
 	"github.com/0xNayel/MonMon/internal/monitor"
@@ -21,6 +25,15 @@ import (
 	"github.com/0xNayel/MonMon/internal/updater"
 	"github.com/spf13/cobra"
 )
+
+const banner = `
+   __  __             __  __
+  |  \/  | ___  _ __ |  \/  | ___  _ __
+  | |\/| |/ _ \| '_ \| |\/| |/ _ \| '_ \
+  | |  | | (_) | | | | |  | | (_) | | | |
+  |_|  |_|\___/|_| |_|_|  |_|\___/|_| |_|
+  Monster Monitoring by 0xNayel
+`
 
 var (
 	version   = "0.1.0"
@@ -33,6 +46,9 @@ func main() {
 		Use:   "monmon",
 		Short: "MonMon — Monitoring Monster",
 		Long:  "Diff-based monitoring for commands, endpoints, and subdomains.",
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			fmt.Print(banner)
+		},
 	}
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file path")
@@ -102,11 +118,29 @@ func main() {
 	addDomainCmd.Flags().String("flow", "builtin", "flow mode: builtin|full|custom")
 	addDomainCmd.Flags().String("name", "", "task name")
 
+	addBbscopeCmd := &cobra.Command{
+		Use:   "add-bbscope [platform]",
+		Short: "Add a bbscope monitoring task (h1, bc, it, ywh)",
+		Args:  cobra.ExactArgs(1),
+		RunE:  runTaskAddBbscope,
+	}
+	addBbscopeCmd.Flags().String("interval", "3600", "check interval in seconds")
+	addBbscopeCmd.Flags().String("name", "", "task name")
+	addBbscopeCmd.Flags().StringP("token", "t", "", "API token (h1, it, ywh)")
+	addBbscopeCmd.Flags().StringP("username", "u", "", "username (h1)")
+	addBbscopeCmd.Flags().StringP("email", "E", "", "email (bc, ywh)")
+	addBbscopeCmd.Flags().StringP("password", "P", "", "password (bc, ywh)")
+	addBbscopeCmd.Flags().String("otp-command", "", "OTP command (bc, ywh)")
+	addBbscopeCmd.Flags().String("categories", "", "categories filter (it, ywh)")
+	addBbscopeCmd.Flags().BoolP("bounty-only", "b", false, "bounty-only programs")
+	addBbscopeCmd.Flags().StringP("output-type", "o", "tc", "output type (default: tc)")
+
 	taskCmd.AddCommand(
 		&cobra.Command{Use: "list", Short: "List tasks", RunE: runTaskList},
 		addCmdCmd,
 		addURLCmd,
 		addDomainCmd,
+		addBbscopeCmd,
 		&cobra.Command{Use: "run [id]", Short: "Trigger immediate check", Args: cobra.ExactArgs(1), RunE: runTaskRun},
 		&cobra.Command{Use: "pause [id]", Short: "Pause a task", Args: cobra.ExactArgs(1), RunE: runTaskPause},
 		&cobra.Command{Use: "resume [id]", Short: "Resume a task", Args: cobra.ExactArgs(1), RunE: runTaskResume},
@@ -349,10 +383,157 @@ func runTaskAddDomain(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+func runTaskAddBbscope(cmd *cobra.Command, args []string) error {
+	database, err := getDB()
+	if err != nil {
+		return err
+	}
+
+	platform := args[0]
+	switch platform {
+	case "h1", "bc", "it", "ywh":
+	default:
+		return fmt.Errorf("unsupported platform %q (supported: h1, bc, it, ywh)", platform)
+	}
+
+	interval, _ := cmd.Flags().GetString("interval")
+	name, _ := cmd.Flags().GetString("name")
+	token, _ := cmd.Flags().GetString("token")
+	username, _ := cmd.Flags().GetString("username")
+	email, _ := cmd.Flags().GetString("email")
+	password, _ := cmd.Flags().GetString("password")
+	otpCommand, _ := cmd.Flags().GetString("otp-command")
+	categories, _ := cmd.Flags().GetString("categories")
+	bountyOnly, _ := cmd.Flags().GetBool("bounty-only")
+	outputType, _ := cmd.Flags().GetString("output-type")
+
+	if interval == "" {
+		interval = "3600"
+	}
+	if name == "" {
+		platforms := map[string]string{"h1": "HackerOne", "bc": "Bugcrowd", "it": "Intigriti", "ywh": "YesWeHack"}
+		name = "BBScope: " + platforms[platform]
+	}
+
+	cfg := models.BbscopeConfig{
+		Platform:   platform,
+		Token:      token,
+		Username:   username,
+		Email:      email,
+		Password:   password,
+		OtpCommand: otpCommand,
+		Categories: categories,
+		BountyOnly: bountyOnly,
+		OutputType: outputType,
+	}
+	cfgJSON, _ := json.Marshal(cfg)
+
+	task := models.Task{
+		Name:          name,
+		Type:          models.TaskTypeBbscope,
+		Status:        models.TaskStatusActive,
+		Config:        string(cfgJSON),
+		ScheduleType:  models.ScheduleLoop,
+		ScheduleValue: interval,
+	}
+	database.Create(&task)
+	fmt.Printf("Task #%d created. Start the server to begin monitoring.\n", task.ID)
+	return nil
+}
+
 func runTaskRun(cmd *cobra.Command, args []string) error {
+	database, err := getDB()
+	if err != nil {
+		return err
+	}
 	id, _ := strconv.ParseUint(args[0], 10, 64)
-	fmt.Printf("Triggering check for task #%d (requires server to be running)\n", id)
-	// In CLI mode without server, we could run it directly — but for v1, require server
+
+	var task models.Task
+	if err := database.First(&task, id).Error; err != nil {
+		return fmt.Errorf("task #%d not found", id)
+	}
+
+	cfg, err := config.Load(cfgFile)
+	if err != nil {
+		return fmt.Errorf("loading config: %w", err)
+	}
+
+	monitors := map[string]monitor.Monitor{
+		models.TaskTypeCommand:   monitor.NewCommandMonitor(),
+		models.TaskTypeEndpoint:  monitor.NewEndpointMonitor(),
+		models.TaskTypeSubdomain: monitor.NewSubdomainMonitor(cfg.Tools.Subfinder, cfg.Tools.Httpx),
+		models.TaskTypeBbscope:   monitor.NewBbscopeMonitor(),
+	}
+
+	mon, ok := monitors[task.Type]
+	if !ok {
+		return fmt.Errorf("unknown task type %q", task.Type)
+	}
+
+	fmt.Printf("Running task #%d (%s)...\n", task.ID, task.Name)
+	start := time.Now()
+	ctx := context.Background()
+	result, err := mon.Execute(ctx, &task)
+	elapsed := time.Since(start)
+	if err != nil {
+		return fmt.Errorf("execution failed: %w", err)
+	}
+	if result.Error != nil {
+		fmt.Printf("Check completed with error: %v\n", result.Error)
+		return nil
+	}
+
+	// Get previous check for diff
+	var prevCheck models.Check
+	hasPrev := database.Where("task_id = ?", task.ID).Order("version DESC").First(&prevCheck).Error == nil
+
+	var diffText string
+	var added, removed int
+	if hasPrev && prevCheck.Output != result.Output {
+		diffText, added, removed = diff.ComputeDiff(prevCheck.Output, result.Output)
+	}
+
+	status := models.CheckSuccess
+	if diffText != "" {
+		status = models.CheckChanged
+	}
+
+	newVersion := 1
+	if hasPrev {
+		newVersion = prevCheck.Version + 1
+	}
+
+	check := models.Check{
+		TaskID:     task.ID,
+		Version:    newVersion,
+		Status:     status,
+		Output:     result.Output,
+		OutputHash: result.Hash,
+		DiffText:   diffText,
+		DiffAdded:  added,
+		DiffRemoved: removed,
+		DurationMs: elapsed.Milliseconds(),
+	}
+	database.Create(&check)
+
+	// Update task stats
+	database.Model(&task).Updates(map[string]any{
+		"last_check_at": time.Now(),
+		"total_checks":  gorm.Expr("total_checks + 1"),
+	})
+	if status == models.CheckChanged {
+		database.Model(&task).Update("total_changes", gorm.Expr("total_changes + 1"))
+	}
+
+	fmt.Printf("Check #%d (v%d) — %s — %s\n", check.ID, check.Version, status, elapsed.Round(time.Millisecond))
+	if diffText != "" {
+		fmt.Printf("+%d -%d lines changed\n", added, removed)
+		fmt.Println(diffText)
+	} else if !hasPrev {
+		fmt.Println("First check recorded.")
+	} else {
+		fmt.Println("No changes.")
+	}
 	return nil
 }
 

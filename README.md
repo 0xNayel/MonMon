@@ -295,6 +295,7 @@ monmon task list                           # List all tasks
 monmon task add-cmd "gau target.com"       # Add command task
 monmon task add-url "https://target.com"   # Add endpoint task
 monmon task add-domain target.com          # Add subdomain task
+monmon task add-bbscope h1 -t TOKEN -u USER  # Add bbscope task
 monmon task run <id>                       # Trigger immediate check
 monmon task pause <id>                     # Pause task
 monmon task resume <id>                    # Resume task
