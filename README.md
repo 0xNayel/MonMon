@@ -85,6 +85,7 @@ git clone https://github.com/0xNayel/MonMon.git && cd MonMon
 echo "MONMON_ADMIN_USER=admin" >> .env
 echo "MONMON_ADMIN_PASSWORD=changeme" >> .env
 
+docker pull nayelxx/monmon:latest
 docker compose up -d
 ```
 
@@ -93,7 +94,7 @@ Open **http://localhost:8888**
 #### Updating (Docker)
 
 ```bash
-docker compose pull && docker compose up -d
+docker pull nayelxx/monmon:latest && docker compose up -d
 ```
 
 #### Build from source (Docker)
