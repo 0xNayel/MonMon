@@ -97,7 +97,7 @@ func (s *Server) SetupRouter() *gin.Engine {
 
 	// Redirect root to /dashboard (SPA handles auth → /login if needed)
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusFound, "/dashboard")
+		c.Redirect(http.StatusFound, "/login")
 	})
 
 	// Serve embedded React SPA for all non-API routes
