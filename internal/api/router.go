@@ -25,6 +25,8 @@ type Server struct {
 // SetupRouter creates and returns the Gin router with all routes.
 func (s *Server) SetupRouter() *gin.Engine {
 	r := gin.New()
+	r.RedirectTrailingSlash = false
+	r.RedirectFixedPath = false
 	r.Use(gin.Recovery())
 
 	// Fingerprint header
