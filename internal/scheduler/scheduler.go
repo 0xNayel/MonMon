@@ -190,14 +190,18 @@ func (s *Scheduler) runCheck(task *models.Task) {
 		s.log.Error("scheduler", &task.ID, fmt.Sprintf("URL check failed (continuing): %s", urlErr))
 	}
 
-	// Get previous check
+	// Get latest check (any status) for version numbering
+	var latest models.Check
+	hasLatest := s.db.Where("task_id = ?", task.ID).Order("version DESC").First(&latest).Error == nil
+
+	// Get last successful check (non-error) for diff comparison
 	var prev models.Check
-	hasPrev := s.db.Where("task_id = ?", task.ID).Order("version DESC").First(&prev).Error == nil
+	hasPrev := s.db.Where("task_id = ? AND status != ?", task.ID, models.CheckError).Order("version DESC").First(&prev).Error == nil
 
 	// Determine version
 	version := 1
-	if hasPrev {
-		version = prev.Version + 1
+	if hasLatest {
+		version = latest.Version + 1
 	}
 
 	// Determine status and compute diff
@@ -208,7 +212,7 @@ func (s *Scheduler) runCheck(task *models.Task) {
 
 	if result.Error != nil {
 		status = models.CheckError
-		errorMsg = result.Error.Error()
+		errorMsg = truncateError(result.Error.Error(), 200)
 	} else if !hasPrev {
 		// First check — baseline
 		status = models.CheckChanged
@@ -302,4 +306,12 @@ func (s *Scheduler) cleanupOldChecks(taskID uint, keep int) {
 	if result.RowsAffected > 0 {
 		s.log.Info("scheduler", &taskID, fmt.Sprintf("Cleaned up %d old checks (keeping %d)", result.RowsAffected, keep))
 	}
+}
+
+// truncateError shortens a long error message to first N + ... + last N characters.
+func truncateError(msg string, n int) string {
+	if len(msg) <= n*2+3 {
+		return msg
+	}
+	return msg[:n] + "..." + msg[len(msg)-n:]
 }
