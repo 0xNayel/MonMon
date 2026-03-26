@@ -90,6 +90,11 @@ func (s *Server) SetupRouter() *gin.Engine {
 		protected.GET("/ws/logs", s.handleWSLogs)
 	}
 
+	// Redirect root to /login
+	r.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/login")
+	})
+
 	// Serve embedded React SPA for all non-API routes
 	if uiFS, err := webui.FS(); err == nil {
 		r.NoRoute(func(c *gin.Context) {
