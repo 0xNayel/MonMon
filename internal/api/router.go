@@ -1,9 +1,10 @@
 package api
 
 import (
+	"io"
+	"mime"
 	"net/http"
 	"path"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/0xNayel/MonMon/internal/auth"
@@ -94,28 +95,40 @@ func (s *Server) SetupRouter() *gin.Engine {
 		protected.GET("/ws/logs", s.handleWSLogs)
 	}
 
-	// Redirect root to /login
+	// Redirect root to /dashboard (SPA handles auth → /login if needed)
 	r.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusFound, "/login")
+		c.Redirect(http.StatusFound, "/dashboard")
 	})
 
 	// Serve embedded React SPA for all non-API routes
 	if uiFS, err := webui.FS(); err == nil {
+		// Read index.html once at startup to avoid http.FileServer redirect issues
+		var indexHTML []byte
+		if f, err := uiFS.Open("index.html"); err == nil {
+			indexHTML, _ = io.ReadAll(f)
+			f.Close()
+		}
+
 		r.NoRoute(func(c *gin.Context) {
 			p := c.Request.URL.Path
 
-			// Only serve actual static files (has a file extension like .js, .css, .png)
-			if ext := path.Ext(p); ext != "" && !strings.EqualFold(ext, ".html") {
+			// Serve static assets directly (files with extensions like .js, .css, .png)
+			if ext := path.Ext(p); ext != "" {
 				f, err := uiFS.Open(p)
 				if err == nil {
+					data, _ := io.ReadAll(f)
 					f.Close()
-					http.FileServer(uiFS).ServeHTTP(c.Writer, c.Request)
+					contentType := mime.TypeByExtension(ext)
+					if contentType == "" {
+						contentType = "application/octet-stream"
+					}
+					c.Data(http.StatusOK, contentType, data)
 					return
 				}
 			}
 
-			// All other paths: serve index.html for SPA client-side routing
-			c.FileFromFS("index.html", uiFS)
+			// All other paths: serve index.html directly (no redirects)
+			c.Data(http.StatusOK, "text/html; charset=utf-8", indexHTML)
 		})
 	}
 
