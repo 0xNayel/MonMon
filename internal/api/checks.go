@@ -35,7 +35,8 @@ func (s *Server) handleListChecks(c *gin.Context) {
 	}
 
 	var checks []models.Check
-	query.Order("version " + order).
+	query.Select("id, task_id, version, status, output_hash, diff_added, diff_removed, metadata, duration_ms, error_msg, created_at").
+		Order("version " + order).
 		Offset((page - 1) * perPage).
 		Limit(perPage).
 		Find(&checks)
