@@ -2,6 +2,8 @@ package api
 
 import (
 	"net/http"
+	"path"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/0xNayel/MonMon/internal/auth"
@@ -98,18 +100,20 @@ func (s *Server) SetupRouter() *gin.Engine {
 	// Serve embedded React SPA for all non-API routes
 	if uiFS, err := webui.FS(); err == nil {
 		r.NoRoute(func(c *gin.Context) {
-			// Try to serve the static file; fall back to index.html for SPA routing
-			fileServer := http.FileServer(uiFS)
-			req := c.Request
-			// Check if the file exists in the FS
-			f, err := uiFS.Open(req.URL.Path)
-			if err != nil {
-				// Serve index.html for all unmatched paths (SPA client-side routing)
-				c.FileFromFS("index.html", uiFS)
-				return
+			p := c.Request.URL.Path
+
+			// Only serve actual static files (has a file extension like .js, .css, .png)
+			if ext := path.Ext(p); ext != "" && !strings.EqualFold(ext, ".html") {
+				f, err := uiFS.Open(p)
+				if err == nil {
+					f.Close()
+					http.FileServer(uiFS).ServeHTTP(c.Writer, c.Request)
+					return
+				}
 			}
-			f.Close()
-			fileServer.ServeHTTP(c.Writer, req)
+
+			// All other paths: serve index.html for SPA client-side routing
+			c.FileFromFS("index.html", uiFS)
 		})
 	}
 
