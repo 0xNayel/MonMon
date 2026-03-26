@@ -187,7 +187,7 @@ func (s *Scheduler) runCheck(task *models.Task) {
 
 	// Log non-fatal per-URL errors (bulk endpoint mode — check continues)
 	for _, urlErr := range result.URLErrors {
-		s.log.Error("scheduler", &task.ID, fmt.Sprintf("URL check failed (continuing): %s", urlErr))
+		s.log.Error("scheduler", &task.ID, fmt.Sprintf("URL check failed (continuing): %s", truncateError(urlErr, 200)))
 	}
 
 	// Get latest check (any status) for version numbering
