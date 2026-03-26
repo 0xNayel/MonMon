@@ -89,7 +89,9 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 
 	out, err := runTool(ctx, "bbscope", args)
 	if err != nil {
-		return nil, fmt.Errorf("bbscope: %w", err)
+		// Strip bbscope log lines from the error message — CombinedOutput mixes
+		// stderr (time="..." log lines) into the error, making it unreadable.
+		return nil, fmt.Errorf("bbscope: %s", filterBbscopeError(err.Error()))
 	}
 
 	// Sort lines for stable diffs (scope order may vary between API calls).
@@ -105,4 +107,24 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 	output := strings.Join(lines, "\n")
 	hash := fmt.Sprintf("%x", sha256.Sum256([]byte(output)))
 	return &models.CheckResult{Output: output, Hash: hash}, nil
+}
+
+// filterBbscopeError removes time="..." log lines from a bbscope error string,
+// keeping only the actual error signal/message (e.g. "signal: killed").
+func filterBbscopeError(errMsg string) string {
+	var kept []string
+	for _, part := range strings.Split(errMsg, `time="`) {
+		// Before the first time=" marker is the real error (e.g. "signal: killed: ")
+		if len(kept) == 0 {
+			s := strings.TrimRight(part, ": ")
+			if s != "" {
+				kept = append(kept, s)
+			}
+		}
+		// Everything after the first time=" is a log line — skip it
+	}
+	if len(kept) == 0 {
+		return errMsg
+	}
+	return strings.Join(kept, "")
 }
