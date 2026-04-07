@@ -89,8 +89,7 @@ export default function ConfigForm({ type, value, onChange }: Props) {
   const [bbUsername,   setBbUsername]   = useState('')
   const [bbEmail,      setBbEmail]      = useState('')
   const [bbPassword,   setBbPassword]   = useState('')
-  const [bbOtp,        setBbOtp]        = useState('')
-  const [bbCategories, setBbCategories] = useState('')
+  const [bbOtpSecret,  setBbOtpSecret]  = useState('')
   const [bbBounty,     setBbBounty]     = useState(true)
   const [bbOutputType, setBbOutputType] = useState('tc')
 
@@ -124,8 +123,7 @@ export default function ConfigForm({ type, value, onChange }: Props) {
         setBbUsername(cfg.username || '')
         setBbEmail(cfg.email || '')
         setBbPassword(cfg.password || '')
-        setBbOtp(cfg.otp_command || '')
-        setBbCategories(cfg.categories || '')
+        setBbOtpSecret(cfg.otp_secret || '')
         setBbBounty(cfg.bounty_only ?? true)
         setBbOutputType(cfg.output_type || 'tc')
       }
@@ -167,21 +165,20 @@ export default function ConfigForm({ type, value, onChange }: Props) {
         output_type: bbOutputType,
       }
       if (bbPlatform === 'h1') {
-        if (bbToken) cfg.token = bbToken
+        if (bbToken)    cfg.token    = bbToken
         if (bbUsername) cfg.username = bbUsername
       } else if (bbPlatform === 'bc') {
-        if (bbEmail)    cfg.email       = bbEmail
-        if (bbPassword) cfg.password    = bbPassword
-        if (bbOtp)      cfg.otp_command = bbOtp
+        if (bbToken)      cfg.token      = bbToken
+        if (bbEmail)      cfg.email      = bbEmail
+        if (bbPassword)   cfg.password   = bbPassword
+        if (bbOtpSecret)  cfg.otp_secret = bbOtpSecret
       } else if (bbPlatform === 'it') {
         if (bbToken) cfg.token = bbToken
-        if (bbCategories) cfg.categories = bbCategories
       } else if (bbPlatform === 'ywh') {
-        if (bbToken)    cfg.token       = bbToken
-        if (bbEmail)    cfg.email       = bbEmail
-        if (bbPassword) cfg.password    = bbPassword
-        if (bbOtp)      cfg.otp_command = bbOtp
-        if (bbCategories) cfg.categories = bbCategories
+        if (bbToken)     cfg.token      = bbToken
+        if (bbEmail)     cfg.email      = bbEmail
+        if (bbPassword)  cfg.password   = bbPassword
+        if (bbOtpSecret) cfg.otp_secret = bbOtpSecret
       }
     }
     onChange(JSON.stringify(cfg))
@@ -189,7 +186,7 @@ export default function ConfigForm({ type, value, onChange }: Props) {
     type, urls, mode, method, headers, regex, epTimeout,
     command, outputMode, outputFile, cmdTimeout,
     domains, httpxSC, httpxCT, httpxTitle, httpxTD, threads,
-    bbPlatform, bbToken, bbUsername, bbEmail, bbPassword, bbOtp, bbCategories, bbBounty, bbOutputType,
+    bbPlatform, bbToken, bbUsername, bbEmail, bbPassword, bbOtpSecret, bbBounty, bbOutputType,
   ])
 
   const grid2: React.CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }
@@ -328,6 +325,10 @@ export default function ConfigForm({ type, value, onChange }: Props) {
 
       {bbPlatform === 'bc' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Field name="Session Cookie (-t)" hint="_bugcrowd_session cookie — or use email+password below">
+            <input value={bbToken} onChange={e => setBbToken(e.target.value)} type="password"
+              placeholder="Bugcrowd session cookie (optional if using email+password)" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+          </Field>
           <div style={grid2}>
             <Field name="Email (-E)">
               <input value={bbEmail} onChange={e => setBbEmail(e.target.value)}
@@ -338,24 +339,18 @@ export default function ConfigForm({ type, value, onChange }: Props) {
                 placeholder="Bugcrowd password" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
             </Field>
           </div>
-          <Field name="OTP Command (--otpcommand)" hint='e.g. oathtool --totp -b "YOURSECRET"'>
-            <input value={bbOtp} onChange={e => setBbOtp(e.target.value)}
-              placeholder='oathtool --totp -b "SECRET"' style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+          <Field name="TOTP Secret (-O)" hint="Base32 TOTP secret (optional)">
+            <input value={bbOtpSecret} onChange={e => setBbOtpSecret(e.target.value)}
+              placeholder="JBSWY3DPEHPK3PXP" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
           </Field>
         </div>
       )}
 
       {bbPlatform === 'it' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <Field name="API Token (-t)">
-            <input value={bbToken} onChange={e => setBbToken(e.target.value)} type="password"
-              placeholder="Intigriti API token" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
-          </Field>
-          <Field name="Categories (-c)" hint="Comma separated: all, url, cidr, mobile, android, apple, device, other, wildcard">
-            <input value={bbCategories} onChange={e => setBbCategories(e.target.value)}
-              placeholder="all" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
-          </Field>
-        </div>
+        <Field name="API Token (-t)">
+          <input value={bbToken} onChange={e => setBbToken(e.target.value)} type="password"
+            placeholder="Intigriti API token" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+        </Field>
       )}
 
       {bbPlatform === 'ywh' && (
@@ -374,16 +369,10 @@ export default function ConfigForm({ type, value, onChange }: Props) {
                 placeholder="YesWeHack password" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
             </Field>
           </div>
-          <div style={grid2}>
-            <Field name="OTP Command (-O)" hint='e.g. oathtool --totp -b "SECRET"'>
-              <input value={bbOtp} onChange={e => setBbOtp(e.target.value)}
-                placeholder='oathtool --totp -b "SECRET"' style={inp} onFocus={focusBorder} onBlur={blurBorder} />
-            </Field>
-            <Field name="Categories (-c)" hint="all, url, mobile, android, apple, executable, other">
-              <input value={bbCategories} onChange={e => setBbCategories(e.target.value)}
-                placeholder="all" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
-            </Field>
-          </div>
+          <Field name="TOTP Secret (-O)" hint="Base32 TOTP secret (optional)">
+            <input value={bbOtpSecret} onChange={e => setBbOtpSecret(e.target.value)}
+              placeholder="JBSWY3DPEHPK3PXP" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+          </Field>
         </div>
       )}
 
