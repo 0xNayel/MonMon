@@ -123,7 +123,7 @@ export default function ConfigForm({ type, value, onChange }: Props) {
         setBbUsername(cfg.username || '')
         setBbEmail(cfg.email || '')
         setBbPassword(cfg.password || '')
-        setBbOtpSecret(cfg.otp_secret || cfg.otp_command || '')
+        setBbOtpSecret(cfg.otp_secret || '')
         setBbBounty(cfg.bounty_only ?? true)
         setBbOutputType(cfg.output_type || 'tc')
       }

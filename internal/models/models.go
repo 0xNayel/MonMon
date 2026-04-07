@@ -158,7 +158,6 @@ type BbscopeConfig struct {
 	Email      string `json:"email,omitempty"`       // bc/ywh: email
 	Password   string `json:"password,omitempty"`    // bc/ywh: password
 	OtpSecret  string `json:"otp_secret,omitempty"`  // bc/ywh: TOTP secret (base32)
-	OtpCommand string `json:"otp_command,omitempty"` // legacy alias for otp_secret
 	BountyOnly bool   `json:"bounty_only"`           // -b flag
 	OutputType string `json:"output_type"`           // "tc" etc.
 }

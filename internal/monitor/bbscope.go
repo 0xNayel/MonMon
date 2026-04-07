@@ -27,11 +27,6 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 		return nil, fmt.Errorf("platform is required (h1, bc, it, or ywh)")
 	}
 
-	// Normalise: otp_command is the legacy key for otp_secret
-	if cfg.OtpSecret == "" && cfg.OtpCommand != "" {
-		cfg.OtpSecret = cfg.OtpCommand
-	}
-
 	args := []string{"poll", cfg.Platform}
 
 	switch cfg.Platform {
