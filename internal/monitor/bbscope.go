@@ -5,8 +5,11 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"os"
 	"sort"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/0xNayel/MonMon/internal/models"
 )
@@ -16,6 +19,68 @@ type BbscopeMonitor struct{}
 
 // NewBbscopeMonitor returns a new BbscopeMonitor.
 func NewBbscopeMonitor() *BbscopeMonitor { return &BbscopeMonitor{} }
+
+// bbscopeYAML mirrors the ~/.bbscope.yaml structure expected by bbscope v2.
+type bbscopeYAML struct {
+	Bugcrowd struct {
+		Email     string `yaml:"email"`
+		OtpSecret string `yaml:"otpsecret"`
+		Password  string `yaml:"password"`
+		Token     string `yaml:"token"`
+	} `yaml:"bugcrowd"`
+	HackerOne struct {
+		Token    string `yaml:"token"`
+		Username string `yaml:"username"`
+	} `yaml:"hackerone"`
+	Intigriti struct {
+		Token string `yaml:"token"`
+	} `yaml:"intigriti"`
+	YesWeHack struct {
+		Email     string `yaml:"email"`
+		OtpSecret string `yaml:"otpsecret"`
+		Password  string `yaml:"password"`
+		Token     string `yaml:"token"`
+	} `yaml:"yeswehack"`
+}
+
+// writeTempConfig writes credentials to a temp bbscope config file and returns
+// its path. The caller must remove the file when done.
+func writeTempConfig(taskID uint, cfg *models.BbscopeConfig) (string, error) {
+	var y bbscopeYAML
+	switch cfg.Platform {
+	case "h1":
+		y.HackerOne.Token = cfg.Token
+		y.HackerOne.Username = cfg.Username
+	case "bc":
+		y.Bugcrowd.Token = cfg.Token
+		y.Bugcrowd.Email = cfg.Email
+		y.Bugcrowd.Password = cfg.Password
+		y.Bugcrowd.OtpSecret = cfg.OtpSecret
+	case "it":
+		y.Intigriti.Token = cfg.Token
+	case "ywh":
+		y.YesWeHack.Token = cfg.Token
+		y.YesWeHack.Email = cfg.Email
+		y.YesWeHack.Password = cfg.Password
+		y.YesWeHack.OtpSecret = cfg.OtpSecret
+	}
+
+	data, err := yaml.Marshal(&y)
+	if err != nil {
+		return "", err
+	}
+
+	f, err := os.CreateTemp("", fmt.Sprintf("bbscope-%d-*.yaml", taskID))
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	if _, err := f.Write(data); err != nil {
+		os.Remove(f.Name())
+		return "", err
+	}
+	return f.Name(), nil
+}
 
 // Execute runs bbscope and returns sorted scope output for stable diffing.
 func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*models.CheckResult, error) {
@@ -27,59 +92,40 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 		return nil, fmt.Errorf("platform is required (h1, bc, it, or ywh)")
 	}
 
-	args := []string{"poll", cfg.Platform}
-
+	// Validate credentials before writing config
 	switch cfg.Platform {
 	case "h1":
-		if cfg.Token == "" {
-			return nil, fmt.Errorf("token (-t) is required for platform h1")
-		}
-		args = append(args, "-t", cfg.Token)
-		if cfg.Username != "" {
-			args = append(args, "-u", cfg.Username)
+		if cfg.Token == "" || cfg.Username == "" {
+			return nil, fmt.Errorf("token and username are required for platform h1")
 		}
 	case "bc":
 		if cfg.Token == "" && (cfg.Email == "" || cfg.Password == "") {
-			return nil, fmt.Errorf("token (-t) or email+password are required for platform bc")
-		}
-		if cfg.Token != "" {
-			args = append(args, "-t", cfg.Token)
-		}
-		if cfg.Email != "" {
-			args = append(args, "-E", cfg.Email)
-		}
-		if cfg.Password != "" {
-			args = append(args, "-P", cfg.Password)
-		}
-		if cfg.OtpSecret != "" {
-			args = append(args, "-O", cfg.OtpSecret)
-		}
-		if cfg.Concurrency > 0 {
-			args = append(args, "--concurrency", fmt.Sprintf("%d", cfg.Concurrency))
+			return nil, fmt.Errorf("token or email+password are required for platform bc")
 		}
 	case "it":
 		if cfg.Token == "" {
-			return nil, fmt.Errorf("token (-t) is required for platform it (Intigriti)")
+			return nil, fmt.Errorf("token is required for platform it (Intigriti)")
 		}
-		args = append(args, "-t", cfg.Token)
 	case "ywh":
 		if cfg.Token == "" && (cfg.Email == "" || cfg.Password == "") {
-			return nil, fmt.Errorf("token (-t) or email+password are required for platform ywh (YesWeHack)")
-		}
-		if cfg.Token != "" {
-			args = append(args, "-t", cfg.Token)
-		}
-		if cfg.Email != "" {
-			args = append(args, "-E", cfg.Email)
-		}
-		if cfg.Password != "" {
-			args = append(args, "-P", cfg.Password)
-		}
-		if cfg.OtpSecret != "" {
-			args = append(args, "-O", cfg.OtpSecret)
+			return nil, fmt.Errorf("token or email+password are required for platform ywh (YesWeHack)")
 		}
 	default:
 		return nil, fmt.Errorf("unsupported platform %q (supported: h1, bc, it, ywh)", cfg.Platform)
+	}
+
+	// Write credentials to a temp config file — bbscope v2 reads auth from
+	// config file only (CLI credential flags are ignored by the tool).
+	cfgFile, err := writeTempConfig(task.ID, &cfg)
+	if err != nil {
+		return nil, fmt.Errorf("bbscope: failed to write config: %w", err)
+	}
+	defer os.Remove(cfgFile)
+
+	args := []string{"poll", cfg.Platform, "--config", cfgFile}
+
+	if cfg.Platform == "bc" && cfg.Concurrency > 0 {
+		args = append(args, "--concurrency", fmt.Sprintf("%d", cfg.Concurrency))
 	}
 
 	if cfg.BountyOnly {
