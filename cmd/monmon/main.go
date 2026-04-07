@@ -131,6 +131,7 @@ func main() {
 	addBbscopeCmd.Flags().StringP("email", "E", "", "email (bc, ywh)")
 	addBbscopeCmd.Flags().StringP("password", "P", "", "password (bc, ywh)")
 	addBbscopeCmd.Flags().String("otp-secret", "", "TOTP secret base32 (bc, ywh)")
+	addBbscopeCmd.Flags().Int("concurrency", 0, "concurrent fetches, 0=default (bc)")
 	addBbscopeCmd.Flags().BoolP("bounty-only", "b", false, "bounty-only programs")
 	addBbscopeCmd.Flags().StringP("output-type", "o", "tc", "output type (default: tc)")
 
@@ -401,8 +402,9 @@ func runTaskAddBbscope(cmd *cobra.Command, args []string) error {
 	username, _ := cmd.Flags().GetString("username")
 	email, _ := cmd.Flags().GetString("email")
 	password, _ := cmd.Flags().GetString("password")
-	otpSecret, _ := cmd.Flags().GetString("otp-secret")
-	bountyOnly, _ := cmd.Flags().GetBool("bounty-only")
+	otpSecret, _   := cmd.Flags().GetString("otp-secret")
+	concurrency, _ := cmd.Flags().GetInt("concurrency")
+	bountyOnly, _  := cmd.Flags().GetBool("bounty-only")
 	outputType, _ := cmd.Flags().GetString("output-type")
 
 	if interval == "" {
@@ -419,8 +421,9 @@ func runTaskAddBbscope(cmd *cobra.Command, args []string) error {
 		Username:   username,
 		Email:      email,
 		Password:   password,
-		OtpSecret: otpSecret,
-		BountyOnly: bountyOnly,
+		OtpSecret:   otpSecret,
+		Concurrency: concurrency,
+		BountyOnly:  bountyOnly,
 		OutputType: outputType,
 	}
 	cfgJSON, _ := json.Marshal(cfg)

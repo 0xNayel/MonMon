@@ -89,8 +89,9 @@ export default function ConfigForm({ type, value, onChange }: Props) {
   const [bbUsername,   setBbUsername]   = useState('')
   const [bbEmail,      setBbEmail]      = useState('')
   const [bbPassword,   setBbPassword]   = useState('')
-  const [bbOtpSecret,  setBbOtpSecret]  = useState('')
-  const [bbBounty,     setBbBounty]     = useState(true)
+  const [bbOtpSecret,    setBbOtpSecret]    = useState('')
+  const [bbConcurrency,  setBbConcurrency]  = useState('')
+  const [bbBounty,       setBbBounty]       = useState(true)
   const [bbOutputType, setBbOutputType] = useState('tc')
 
   // ── Load from value ──────────────────────────────────────────────────────────
@@ -124,6 +125,7 @@ export default function ConfigForm({ type, value, onChange }: Props) {
         setBbEmail(cfg.email || '')
         setBbPassword(cfg.password || '')
         setBbOtpSecret(cfg.otp_secret || '')
+        setBbConcurrency(cfg.concurrency ? String(cfg.concurrency) : '')
         setBbBounty(cfg.bounty_only ?? true)
         setBbOutputType(cfg.output_type || 'tc')
       }
@@ -171,7 +173,8 @@ export default function ConfigForm({ type, value, onChange }: Props) {
         if (bbToken)      cfg.token      = bbToken
         if (bbEmail)      cfg.email      = bbEmail
         if (bbPassword)   cfg.password   = bbPassword
-        if (bbOtpSecret)  cfg.otp_secret = bbOtpSecret
+        if (bbOtpSecret)    cfg.otp_secret   = bbOtpSecret
+        if (bbConcurrency)  cfg.concurrency  = Number(bbConcurrency)
       } else if (bbPlatform === 'it') {
         if (bbToken) cfg.token = bbToken
       } else if (bbPlatform === 'ywh') {
@@ -186,7 +189,7 @@ export default function ConfigForm({ type, value, onChange }: Props) {
     type, urls, mode, method, headers, regex, epTimeout,
     command, outputMode, outputFile, cmdTimeout,
     domains, httpxSC, httpxCT, httpxTitle, httpxTD, threads,
-    bbPlatform, bbToken, bbUsername, bbEmail, bbPassword, bbOtpSecret, bbBounty, bbOutputType,
+    bbPlatform, bbToken, bbUsername, bbEmail, bbPassword, bbOtpSecret, bbConcurrency, bbBounty, bbOutputType,
   ])
 
   const grid2: React.CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }
@@ -339,10 +342,16 @@ export default function ConfigForm({ type, value, onChange }: Props) {
                 placeholder="Bugcrowd password" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
             </Field>
           </div>
-          <Field name="TOTP Secret (-O)" hint="Base32 TOTP secret (optional)">
-            <input value={bbOtpSecret} onChange={e => setBbOtpSecret(e.target.value)}
-              placeholder="JBSWY3DPEHPK3PXP" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
-          </Field>
+          <div style={grid2}>
+            <Field name="TOTP Secret (-O)" hint="Base32 TOTP secret (optional)">
+              <input value={bbOtpSecret} onChange={e => setBbOtpSecret(e.target.value)}
+                placeholder="JBSWY3DPEHPK3PXP" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+            </Field>
+            <Field name="Concurrency (--concurrency)" hint="Parallel fetches, default 1 (optional)">
+              <input value={bbConcurrency} onChange={e => setBbConcurrency(e.target.value)}
+                placeholder="1" type="number" min="1" style={inp} onFocus={focusBorder} onBlur={blurBorder} />
+            </Field>
+          </div>
         </div>
       )}
 

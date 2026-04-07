@@ -54,6 +54,9 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 		if cfg.OtpSecret != "" {
 			args = append(args, "-O", cfg.OtpSecret)
 		}
+		if cfg.Concurrency > 0 {
+			args = append(args, "--concurrency", fmt.Sprintf("%d", cfg.Concurrency))
+		}
 	case "it":
 		if cfg.Token == "" {
 			return nil, fmt.Errorf("token (-t) is required for platform it (Intigriti)")

@@ -157,8 +157,9 @@ type BbscopeConfig struct {
 	Username   string `json:"username,omitempty"`    // h1: username
 	Email      string `json:"email,omitempty"`       // bc/ywh: email
 	Password   string `json:"password,omitempty"`    // bc/ywh: password
-	OtpSecret  string `json:"otp_secret,omitempty"`  // bc/ywh: TOTP secret (base32)
-	BountyOnly bool   `json:"bounty_only"`           // -b flag
+	OtpSecret   string `json:"otp_secret,omitempty"`   // bc/ywh: TOTP secret (base32)
+	Concurrency int    `json:"concurrency,omitempty"`  // bc: --concurrency (default 5)
+	BountyOnly  bool   `json:"bounty_only"`            // -b flag
 	OutputType string `json:"output_type"`           // "tc" etc.
 }
 
