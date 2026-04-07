@@ -11,7 +11,7 @@ FROM golang:1.25-alpine AS go-build
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download && \
-    GOPATH=/go go install github.com/sw33tLie/bbscope@latest || echo "bbscope install skipped" && \
+    GOPATH=/go go install github.com/sw33tLie/bbscope/v2@latest || echo "bbscope install skipped" && \
     GOPATH=/go go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest || echo "subfinder install skipped" && \
     GOPATH=/go go install github.com/projectdiscovery/httpx/cmd/httpx@latest || echo "httpx install skipped"
 COPY . .
@@ -23,7 +23,7 @@ RUN CGO_ENABLED=0 go build -ldflags "-s -w -X main.version=${VERSION}" -o /monmo
 
 # Runtime image — minimal Alpine
 FROM alpine:3.19
-RUN apk add --no-cache ca-certificates bash oath-toolkit-oathtool
+RUN apk add --no-cache ca-certificates bash
 
 COPY --from=go-build /monmon /usr/local/bin/monmon
 COPY --from=go-build /go/bin/bbscope   /usr/local/bin/bbscope
