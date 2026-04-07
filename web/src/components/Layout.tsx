@@ -347,8 +347,8 @@ export default function Layout() {
                   style={{
                     fontSize: 10, fontWeight: 600, padding: '2px 7px',
                     borderRadius: 4, textDecoration: 'none',
-                    background: 'rgba(99,102,241,0.12)', color: 'var(--accent)',
-                    border: '1px solid rgba(99,102,241,0.25)',
+                    background: 'var(--accent-dim)', color: 'var(--accent)',
+                    border: '1px solid var(--accent-glow)',
                     animation: 'breathe 2s ease-in-out infinite',
                   }}
                 >

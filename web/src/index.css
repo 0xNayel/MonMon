@@ -112,7 +112,7 @@ body::before {
 
 @keyframes glow-breathe {
   0%, 100% { box-shadow: 0 0 16px var(--accent-glow); }
-  50%       { box-shadow: 0 0 32px var(--accent-glow), 0 0 48px rgba(99,102,241,0.1); }
+  50%       { box-shadow: 0 0 32px var(--accent-glow), 0 0 48px var(--accent-dim); }
 }
 
 @keyframes counter-flash-green {

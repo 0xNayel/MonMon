@@ -58,9 +58,9 @@ export default function System() {
           {report && (
             <span style={{
               padding: '2px 8px', borderRadius: 4, fontSize: 11, fontFamily: 'var(--font-mono)',
-              background: report.all_ok ? 'rgba(34,197,94,0.1)' : 'rgba(255,59,92,0.1)',
-              color:      report.all_ok ? '#4ade80'             : '#FF3B5C',
-              border:     `1px solid ${report.all_ok ? 'rgba(34,197,94,0.25)' : 'rgba(255,59,92,0.25)'}`,
+              background: report.all_ok ? 'var(--success-dim)' : 'var(--critical-dim)',
+              color:      report.all_ok ? 'var(--success)'     : 'var(--critical)',
+              border:     `1px solid ${report.all_ok ? 'var(--success-glow)' : 'var(--critical-dim)'}`,
             }}>
               {report.all_ok ? 'all found' : 'some missing'}
             </span>
@@ -95,9 +95,9 @@ export default function System() {
                   <td style={{ padding: '14px 20px' }}>
                     <span style={{
                       padding: '3px 10px', borderRadius: 6, fontSize: 12, fontFamily: 'var(--font-mono)',
-                      background: t.found ? 'rgba(34,197,94,0.1)' : 'rgba(255,59,92,0.1)',
-                      color:      t.found ? '#4ade80'             : '#FF3B5C',
-                      border:     `1px solid ${t.found ? 'rgba(34,197,94,0.25)' : 'rgba(255,59,92,0.25)'}`,
+                      background: t.found ? 'var(--success-dim)' : 'var(--critical-dim)',
+                      color:      t.found ? 'var(--success)'     : 'var(--critical)',
+                      border:     `1px solid ${t.found ? 'var(--success-glow)' : 'var(--critical-dim)'}`,
                     }}>
                       {t.found ? 'found' : 'missing'}
                     </span>

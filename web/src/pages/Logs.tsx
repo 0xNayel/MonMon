@@ -8,13 +8,13 @@ interface LogEntry {
 const levelStyle = (level: string): React.CSSProperties => {
   if (level === 'error') return { color: 'var(--critical)', background: 'rgba(255,59,92,0.08)' }
   if (level === 'warn')  return { color: 'var(--warn)', background: 'rgba(255,179,0,0.06)' }
-  if (level === 'info')  return { color: '#38BDF8', background: 'transparent' }
+  if (level === 'info')  return { color: 'var(--accent)', background: 'transparent' }
   return { color: 'var(--text-faint)', background: 'transparent' }
 }
 
 const levelDot = (level: string) => {
   const colors: Record<string, string> = {
-    error: 'var(--critical)', warn: 'var(--warn)', info: '#38BDF8', debug: 'var(--text-faint)'
+    error: 'var(--critical)', warn: 'var(--warn)', info: 'var(--accent)', debug: 'var(--text-faint)'
   }
   return <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: colors[level] || 'var(--text-faint)', flexShrink: 0, marginTop: 4 }} />
 }
@@ -95,10 +95,10 @@ export default function Logs() {
           <button onClick={() => setLive(!live)} style={{
             padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600,
             fontFamily: 'var(--font-mono)', transition: 'all 0.15s',
-            background: live ? 'rgba(99,102,241,0.12)' : 'rgba(255,255,255,0.04)',
+            background: live ? 'var(--accent-dim)' : 'rgba(255,255,255,0.04)',
             color: live ? 'var(--accent)' : 'var(--text-muted)',
-            border: live ? '1px solid rgba(99,102,241,0.3)' : '1px solid var(--border)',
-            boxShadow: live ? '0 0 12px rgba(99,102,241,0.15)' : 'none',
+            border: live ? '1px solid var(--accent-glow)' : '1px solid var(--border)',
+            boxShadow: live ? '0 0 12px var(--accent-glow)' : 'none',
           }}>
             {live ? '● LIVE' : 'LIVE'}
           </button>
@@ -127,7 +127,7 @@ export default function Logs() {
         </select>
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search messages..." style={{ ...inp, width: 220 }}
-          onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
+          onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
           onBlur={e => (e.target.style.borderColor = 'var(--border)')} />
         {(level || source || search) && (
           <button onClick={() => { setLevel(''); setSource(''); setSearch('') }} style={{
@@ -138,14 +138,14 @@ export default function Logs() {
 
       {/* Log terminal */}
       <div style={{
-        flex: 1, background: '#050608', border: '1px solid var(--border)', borderRadius: 12,
+        flex: 1, background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 12,
         overflow: 'auto', fontFamily: 'var(--font-mono)', fontSize: 12, minHeight: 0,
-        boxShadow: 'inset 0 2px 20px rgba(0,0,0,0.5)',
+        boxShadow: 'inset 0 2px 20px rgba(0,0,0,0.3)',
       }}>
         {/* Terminal bar */}
         <div style={{
-          padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.05)',
-          display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.02)',
+          padding: '10px 16px', borderBottom: '1px solid var(--border-subtle)',
+          display: 'flex', alignItems: 'center', gap: 6, background: 'var(--bg-card)',
           position: 'sticky', top: 0, zIndex: 1,
         }}>
           <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF5F56' }} />
@@ -166,10 +166,10 @@ export default function Logs() {
                 <div key={l.id || i} style={{
                   display: 'flex', alignItems: 'flex-start', gap: 10,
                   padding: '4px 14px', background: style.background,
-                  borderBottom: '1px solid rgba(255,255,255,0.02)',
+                  borderBottom: '1px solid var(--border-subtle)',
                   transition: 'background 0.1s',
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-card-hover)')}
                   onMouseLeave={e => (e.currentTarget.style.background = (style.background as string) || 'transparent')}>
                   {levelDot(l.level)}
                   <span style={{ color: 'var(--text-faint)', width: 72, flexShrink: 0, fontSize: 11 }}>

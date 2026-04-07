@@ -22,9 +22,9 @@ interface DiffData {
 
 // ── Line renderer ──────────────────────────────────────────────────────────────
 function lineStyle(line: string): { bg: string; fg: string } {
-  if (line[0] === '+') return { bg: 'rgba(34,197,94,0.08)',  fg: '#4ade80'  }
-  if (line[0] === '-') return { bg: 'rgba(255,59,92,0.08)',  fg: '#FF3B5C'  }
-  if (line.startsWith('@@')) return { bg: 'rgba(56,189,248,0.04)', fg: '#38BDF8' }
+  if (line[0] === '+') return { bg: 'var(--diff-added-bg)',   fg: 'var(--diff-added-color)'   }
+  if (line[0] === '-') return { bg: 'var(--diff-removed-bg)', fg: 'var(--diff-removed-color)' }
+  if (line.startsWith('@@')) return { bg: 'var(--accent-dim)', fg: 'var(--accent)' }
   return { bg: 'transparent', fg: 'var(--text-primary)' }
 }
 
@@ -105,10 +105,10 @@ const BASE_BTN: React.CSSProperties = {
 function btn(active: boolean, color: 'indigo' | 'green' | 'amber' = 'indigo'): React.CSSProperties {
   if (!active) return BASE_BTN
   if (color === 'green')
-    return { ...BASE_BTN, background: 'rgba(34,197,94,0.1)',   color: '#4ade80',  border: '1px solid rgba(34,197,94,0.25)'  }
+    return { ...BASE_BTN, background: 'var(--success-dim)', color: 'var(--success)', border: '1px solid var(--success-glow)' }
   if (color === 'amber')
-    return { ...BASE_BTN, background: 'rgba(251,191,36,0.1)',  color: '#FBBF24',  border: '1px solid rgba(251,191,36,0.25)' }
-  return   { ...BASE_BTN, background: 'var(--accent-dim)',     color: 'var(--accent)', border: '1px solid rgba(99,102,241,0.25)' }
+    return { ...BASE_BTN, background: 'var(--warn-dim)',    color: 'var(--warn)',    border: '1px solid rgba(255,179,0,0.25)' }
+  return   { ...BASE_BTN, background: 'var(--accent-dim)',  color: 'var(--accent)', border: '1px solid var(--accent-glow)'   }
 }
 
 const INPUT_STYLE: React.CSSProperties = {
@@ -179,10 +179,10 @@ export default function DiffView() {
               <h2 style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700 }}>
                 Diff — Check #{id}
               </h2>
-              {!loading && totalAdded   > 0 && <span style={{ padding: '3px 10px', background: 'rgba(34,197,94,0.1)',  color: '#4ade80',  border: '1px solid rgba(34,197,94,0.25)',  borderRadius: 6, fontSize: 12, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>+{totalAdded}</span>}
-              {!loading && totalRemoved > 0 && <span style={{ padding: '3px 10px', background: 'rgba(255,59,92,0.1)', color: '#FF3B5C', border: '1px solid rgba(255,59,92,0.25)', borderRadius: 6, fontSize: 12, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>-{totalRemoved}</span>}
+              {!loading && totalAdded   > 0 && <span style={{ padding: '3px 10px', background: 'var(--success-dim)', color: 'var(--diff-added-color)',   border: '1px solid var(--success-glow)', borderRadius: 6, fontSize: 12, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>+{totalAdded}</span>}
+              {!loading && totalRemoved > 0 && <span style={{ padding: '3px 10px', background: 'var(--critical-dim)', color: 'var(--diff-removed-color)', border: '1px solid var(--critical-dim)', borderRadius: 6, fontSize: 12, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>-{totalRemoved}</span>}
               {!loading && !data?.is_multi && firstTimeAdded > 0 && (
-                <span style={{ padding: '3px 10px', background: 'rgba(251,191,36,0.1)', color: '#FBBF24', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 6, fontSize: 12, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+                <span style={{ padding: '3px 10px', background: 'var(--warn-dim)', color: 'var(--warn)', border: '1px solid rgba(255,179,0,0.25)', borderRadius: 6, fontSize: 12, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
                   {firstTimeAdded} new
                 </span>
               )}
@@ -253,7 +253,7 @@ export default function DiffView() {
                 key={s.url}
                 style={{
                   background: s.has_changes ? 'rgba(255,255,255,0.03)' : 'var(--bg-card)',
-                  border: s.has_changes ? '1px solid rgba(99,102,241,0.2)' : '1px solid var(--border)',
+                  border: s.has_changes ? '1px solid var(--accent-glow)' : '1px solid var(--border)',
                   borderRadius: 12, overflow: 'hidden',
                 }}
               >
@@ -272,8 +272,8 @@ export default function DiffView() {
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 10 }}>
-                    {s.added   > 0 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#4ade80'  }}>+{s.added}</span>}
-                    {s.removed > 0 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#FF3B5C' }}>-{s.removed}</span>}
+                    {s.added   > 0 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--diff-added-color)'   }}>+{s.added}</span>}
+                    {s.removed > 0 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--diff-removed-color)' }}>-{s.removed}</span>}
                     <span style={{ color: 'var(--text-faint)', fontSize: 14, display: 'inline-block', transform: open_ ? 'none' : 'rotate(-90deg)', transition: 'transform 0.2s' }}>∨</span>
                   </div>
                 </button>

@@ -128,7 +128,7 @@ export default function TaskDetail() {
   }
 
   const taskStatusStyle = (s: string): React.CSSProperties => {
-    if (s === 'active') return { background: 'rgba(99,102,241,0.1)', color: 'var(--accent)', border: '1px solid rgba(99,102,241,0.25)', animation: 'breathe 2s ease-in-out infinite' }
+    if (s === 'active') return { background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--accent-glow)', animation: 'breathe 2s ease-in-out infinite' }
     if (s === 'paused') return { background: 'var(--warn-dim)', color: 'var(--warn)', border: '1px solid rgba(255,179,0,0.25)' }
     return { background: 'var(--critical-dim)', color: 'var(--critical)', border: '1px solid rgba(255,59,92,0.25)' }
   }
@@ -173,7 +173,7 @@ export default function TaskDetail() {
               padding: '9px 20px', background: 'var(--accent-solid)', color: '#ffffff',
               border: 'none', borderRadius: 8, cursor: 'pointer',
               fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
-              boxShadow: '0 0 16px rgba(99,102,241,0.25)', transition: 'all 0.15s',
+              boxShadow: '0 0 16px var(--accent-glow)', transition: 'all 0.15s',
             }}>
               ▶ RUN NOW
             </button>

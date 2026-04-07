@@ -149,13 +149,13 @@ export default function Tasks() {
           <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{total} task{total !== 1 ? 's' : ''} configured</p>
         </div>
         <button onClick={() => setShowAdd(!showAdd)} style={{
-          padding: '9px 18px', background: showAdd ? 'rgba(99,102,241,0.15)' : 'var(--accent-solid)',
+          padding: '9px 18px', background: showAdd ? 'var(--accent-dim)' : 'var(--accent-solid)',
           color: showAdd ? 'var(--accent)' : '#ffffff',
-          border: showAdd ? '1px solid rgba(99,102,241,0.3)' : 'none',
+          border: showAdd ? '1px solid var(--accent-glow)' : 'none',
           borderRadius: 8, cursor: 'pointer', fontFamily: 'var(--font-mono)',
           fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
           transition: 'all 0.15s',
-          boxShadow: showAdd ? 'none' : '0 0 16px rgba(99,102,241,0.25)',
+          boxShadow: showAdd ? 'none' : '0 0 16px var(--accent-glow)',
         }}>
           {showAdd ? '✕ CANCEL' : '+ NEW TASK'}
         </button>
@@ -165,7 +165,7 @@ export default function Tasks() {
       {showAdd && (
         <form onSubmit={addTask} style={{
           background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(99,102,241,0.15)', borderRadius: 12, padding: '24px',
+          border: '1px solid var(--accent-dim)', borderRadius: 12, padding: '24px',
           animation: 'cascade-in 0.25s ease-out',
         }}>
           <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--accent)', marginBottom: 20, letterSpacing: '0.08em' }}>
@@ -176,7 +176,7 @@ export default function Tasks() {
               <label style={{ display: 'block', fontSize: 11, color: 'var(--text-muted)', marginBottom: 6, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Task Name</label>
               <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. Monitor Login Page" style={formInp} required
-                onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
+                onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
                 onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
             </div>
             <div>
@@ -209,7 +209,7 @@ export default function Tasks() {
                     type="number" min="1" value={form.schedule_value}
                     onChange={e => setForm({ ...form, schedule_value: e.target.value })}
                     style={{ ...formInp, flex: 1 }} required
-                    onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
+                    onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
                     onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
                   />
                   <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, overflow: 'hidden' }}>
@@ -227,7 +227,7 @@ export default function Tasks() {
               ) : (
                 <input value={form.schedule_value} onChange={e => setForm({ ...form, schedule_value: e.target.value })}
                   placeholder="*/5 * * * *" style={formInp} required
-                  onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
+                  onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
                   onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')} />
               )}
             </div>
@@ -248,7 +248,7 @@ export default function Tasks() {
               padding: '9px 22px', background: 'var(--accent-solid)', color: '#ffffff',
               border: 'none', borderRadius: 8, cursor: 'pointer',
               fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
-              boxShadow: '0 0 16px rgba(99,102,241,0.25)',
+              boxShadow: '0 0 16px var(--accent-glow)',
             }}>CREATE</button>
           </div>
         </form>
@@ -258,7 +258,7 @@ export default function Tasks() {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search tasks..." style={{ ...inp, width: 220 }}
-          onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
+          onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
           onBlur={e => (e.target.style.borderColor = 'var(--border)')} />
         <select value={filterType} onChange={e => setFilterType(e.target.value)} style={selectStyle}>
           <option value="">All types</option>

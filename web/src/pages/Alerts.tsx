@@ -332,13 +332,13 @@ export default function Alerts() {
         </div>
         <button onClick={() => showForm ? closeForm() : openCreate()} style={{
           padding: '9px 18px',
-          background: showForm ? 'rgba(99,102,241,0.15)' : 'var(--accent-solid)',
+          background: showForm ? 'var(--accent-dim)' : 'var(--accent-solid)',
           color: showForm ? 'var(--accent)' : '#ffffff',
-          border: showForm ? '1px solid rgba(99,102,241,0.3)' : 'none',
+          border: showForm ? '1px solid var(--accent-glow)' : 'none',
           borderRadius: 8, cursor: 'pointer',
           fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, letterSpacing: '0.06em',
           transition: 'all 0.15s',
-          boxShadow: showForm ? 'none' : '0 0 16px rgba(99,102,241,0.25)',
+          boxShadow: showForm ? 'none' : '0 0 16px var(--accent-glow)',
         }}>
           {showForm ? '✕ CANCEL' : '+ NEW ALERT'}
         </button>
@@ -431,9 +431,9 @@ export default function Alerts() {
                     style={{
                       padding: '4px 12px', borderRadius: 6, fontSize: 12, cursor: 'pointer',
                       fontFamily: 'var(--font-mono)', transition: 'all 0.15s',
-                      background: (mode === 'custom') === form.useCustomTemplate ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.04)',
+                      background: (mode === 'custom') === form.useCustomTemplate ? 'var(--accent-dim)' : 'rgba(255,255,255,0.04)',
                       color:      (mode === 'custom') === form.useCustomTemplate ? 'var(--accent)' : 'var(--text-muted)',
-                      border:     (mode === 'custom') === form.useCustomTemplate ? '1px solid rgba(99,102,241,0.3)' : '1px solid var(--border)',
+                      border:     (mode === 'custom') === form.useCustomTemplate ? '1px solid var(--accent-glow)' : '1px solid var(--border)',
                     }}
                   >{mode}</button>
                 ))}
@@ -456,7 +456,7 @@ export default function Alerts() {
                     ...formInp, resize: 'vertical', lineHeight: 1.7,
                     fontFamily: 'var(--font-mono)', fontSize: 12,
                   }}
-                  onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
+                  onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
                   onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
                 />
                 <div style={{
@@ -506,7 +506,7 @@ export default function Alerts() {
       <div style={{ display: 'flex', gap: 10 }}>
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search by name..." style={{ ...inp, width: 220 }}
-          onFocus={e => (e.target.style.borderColor = 'rgba(99,102,241,0.4)')}
+          onFocus={e => (e.target.style.borderColor = 'var(--accent-glow)')}
           onBlur={e => (e.target.style.borderColor = 'var(--border)')} />
         <select value={filterScope} onChange={e => setFilterScope(e.target.value as never)}
           style={{ ...inp, width: 'auto', cursor: 'pointer' }}>
@@ -547,7 +547,7 @@ export default function Alerts() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      {a.on_change && <span style={{ padding: '3px 9px', background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 6, fontSize: 12 }}>change</span>}
+                      {a.on_change && <span style={{ padding: '3px 9px', background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--accent-glow)', borderRadius: 6, fontSize: 12 }}>change</span>}
                       {a.on_error  && <span style={{ padding: '3px 9px', background: 'var(--critical-dim)', color: 'var(--critical)', border: '1px solid rgba(255,59,92,0.2)', borderRadius: 6, fontSize: 12 }}>error</span>}
                     </div>
                   </td>
@@ -558,9 +558,9 @@ export default function Alerts() {
                     <button onClick={() => toggle(a)} style={{
                       padding: '3px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer',
                       fontFamily: 'var(--font-mono)', transition: 'all 0.15s',
-                      background: a.enabled ? 'rgba(99,102,241,0.1)' : 'rgba(255,255,255,0.04)',
+                      background: a.enabled ? 'var(--accent-dim)' : 'rgba(255,255,255,0.04)',
                       color:      a.enabled ? 'var(--accent)' : 'var(--text-faint)',
-                      border:     a.enabled ? '1px solid rgba(99,102,241,0.25)' : '1px solid var(--border)',
+                      border:     a.enabled ? '1px solid var(--accent-glow)' : '1px solid var(--border)',
                     }}>
                       {a.enabled ? '● ON' : '○ OFF'}
                     </button>
