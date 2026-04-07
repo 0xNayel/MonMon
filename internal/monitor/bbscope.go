@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 	"strings"
 
@@ -145,7 +146,7 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 		return nil, fmt.Errorf("bbscope: %s", filterBbscopeError(err.Error()))
 	}
 
-	// Sort lines for stable diffs (scope order may vary between API calls).
+	// Sort + deduplicate lines (equivalent to | sort -u) for stable diffs.
 	// Filter out bbscope log lines (time="..." level=...) that cause false diffs.
 	var lines []string
 	for _, l := range strings.Split(strings.TrimSpace(out), "\n") {
@@ -154,6 +155,8 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 		}
 	}
 	sort.Strings(lines)
+	// Remove consecutive duplicates (sort -u)
+	lines = slices.Compact(lines)
 
 	output := strings.Join(lines, "\n")
 	hash := fmt.Sprintf("%x", sha256.Sum256([]byte(output)))
