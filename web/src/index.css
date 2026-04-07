@@ -1,25 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --bg-base: #080A0E;
-  --bg-surface: #0D0F14;
-  --bg-card: rgba(255,255,255,0.04);
-  --bg-card-hover: rgba(255,255,255,0.07);
-  --border: rgba(255,255,255,0.08);
-  --border-subtle: rgba(255,255,255,0.04);
-  --accent: #818CF8;
-  --accent-solid: #6366F1;
-  --accent-dim: rgba(99,102,241,0.12);
-  --accent-glow: rgba(99,102,241,0.25);
-  --warn: #FFB300;
-  --warn-dim: rgba(255,179,0,0.12);
-  --critical: #FF3B5C;
-  --critical-dim: rgba(255,59,92,0.12);
-  --text-primary: #E8EAF0;
-  --text-muted: #6B7280;
-  --text-faint: #374151;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-body: 'Outfit', system-ui, sans-serif;
+  --bg-base:           #080A0E;
+  --bg-surface:        #0D0F14;
+  --bg-card:           rgba(255,255,255,0.035);
+  --bg-card-hover:     rgba(255,255,255,0.065);
+  --border:            rgba(255,255,255,0.08);
+  --border-subtle:     rgba(255,255,255,0.04);
+  --accent:            #818CF8;
+  --accent-solid:      #6366F1;
+  --accent-dim:        rgba(99,102,241,0.12);
+  --accent-glow:       rgba(99,102,241,0.25);
+  --success:           #34D399;
+  --success-dim:       rgba(52,211,153,0.12);
+  --success-glow:      rgba(52,211,153,0.25);
+  --warn:              #FFB300;
+  --warn-dim:          rgba(255,179,0,0.12);
+  --critical:          #FF3B5C;
+  --critical-dim:      rgba(255,59,92,0.12);
+  --text-primary:      #E8EAF0;
+  --text-muted:        #6B7280;
+  --text-faint:        #374151;
+  --font-mono:         'JetBrains Mono', monospace;
+  --font-body:         'Outfit', system-ui, sans-serif;
+  --radius-sm:         6px;
+  --radius:            10px;
+  --radius-lg:         14px;
+  --shadow-card:       0 1px 3px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3);
+  --shadow-card-hover: 0 4px 8px rgba(0,0,0,0.5), 0 16px 40px rgba(0,0,0,0.4);
+  --shadow-btn:        0 0 20px var(--accent-glow);
+  --scrollbar-thumb:   rgba(255,255,255,0.1);
+  --scrollbar-thumb-hover: rgba(255,255,255,0.18);
+  --diff-added-bg:     rgba(52,211,153,0.08);
+  --diff-added-color:  #34D399;
+  --diff-removed-bg:   rgba(255,59,92,0.1);
+  --diff-removed-color:#FF3B5C;
+  --select-option-bg:  #0D0F14;
+  --select-option-color:#E8EAF0;
+  --noise-opacity:     0.4;
 }
 
 * { box-sizing: border-box; }
@@ -53,8 +71,13 @@ body::before {
 /* ── Animations ─────────────────────────────────────── */
 
 @keyframes cascade-in {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes shimmer {
@@ -63,6 +86,11 @@ body::before {
 }
 
 @keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 var(--success-glow); }
+  50%       { box-shadow: 0 0 0 6px transparent; }
+}
+
+@keyframes pulse-accent {
   0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
   50%       { box-shadow: 0 0 0 8px transparent; }
 }
@@ -82,8 +110,13 @@ body::before {
   50%       { opacity: 1; }
 }
 
+@keyframes glow-breathe {
+  0%, 100% { box-shadow: 0 0 16px var(--accent-glow); }
+  50%       { box-shadow: 0 0 32px var(--accent-glow), 0 0 48px rgba(99,102,241,0.1); }
+}
+
 @keyframes counter-flash-green {
-  0%   { color: var(--accent); }
+  0%   { color: var(--success); }
   100% { color: inherit; }
 }
 
@@ -94,7 +127,12 @@ body::before {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Cascade animation (applied via JS stagger) ──── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* ── Cascade animation ────────────────────────────── */
 .cascade { animation: cascade-in 0.4s ease-out both; }
 
 /* ── Skeleton shimmer ────────────────────────────── */
@@ -112,13 +150,31 @@ body::before {
 /* ── Glass card ──────────────────────────────────── */
 .glass {
   background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
 }
 
 .glass:hover {
   background: var(--bg-card-hover);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ── Card ────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  box-shadow: var(--shadow-card-hover);
 }
 
 /* ── Select dropdowns ────────────────────────────── */
@@ -153,6 +209,79 @@ select option:checked {
 .diff-added   { background: var(--diff-added-bg);    color: var(--diff-added-color); }
 .diff-removed { background: var(--diff-removed-bg);  color: var(--diff-removed-color); }
 .diff-header  { color: var(--text-muted); font-style: italic; }
+
+/* ── Status badge helpers ────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ── Section header ──────────────────────────────── */
+.section-header {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Table ───────────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead tr {
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+
+.data-table thead th {
+  text-align: left;
+  padding: 11px 16px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.12s;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(255,255,255,0.025);
+}
+
+.data-table tbody td {
+  padding: 12px 16px;
+}
+
+/* ── Input base ──────────────────────────────────── */
+.input-base {
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input-base:focus {
+  border-color: var(--accent-glow);
+}
 
 /* ── View Transitions (theme switcher circle-reveal) ─ */
 @keyframes vt-reveal {

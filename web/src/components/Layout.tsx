@@ -246,7 +246,7 @@ export default function Layout() {
       {/* Sidebar */}
       <aside style={{
         width: 220,
-        background: 'rgba(255,255,255,0.02)',
+        background: 'var(--bg-surface)',
         backdropFilter: 'blur(20px)',
         borderRight: '1px solid var(--border)',
         display: 'flex',
@@ -254,6 +254,7 @@ export default function Layout() {
         flexShrink: 0,
         position: 'relative',
         zIndex: 100,
+        boxShadow: '4px 0 24px rgba(0,0,0,0.3)',
       }}>
         {/* Brand */}
         <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid var(--border)' }}>
@@ -278,17 +279,18 @@ export default function Layout() {
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1, padding: '12px 10px' }}>
+        <nav style={{ flex: 1, padding: '12px 8px' }}>
           {nav.map(n => (
             <NavLink key={n.to} to={n.to} end={n.to === '/'}
               style={({ isActive }) => ({
                 display: 'flex', alignItems: 'center', gap: 10,
-                padding: '9px 12px', borderRadius: 8, marginBottom: 2,
-                textDecoration: 'none', fontSize: 14, fontWeight: 500,
+                padding: '9px 14px', borderRadius: 8, marginBottom: 2,
+                textDecoration: 'none', fontSize: 13, fontWeight: 500,
                 transition: 'all 0.15s',
                 background: isActive ? 'var(--accent-dim)' : 'transparent',
                 color: isActive ? 'var(--accent)' : 'var(--text-muted)',
-                border: isActive ? '1px solid var(--accent-glow)' : '1px solid transparent',
+                borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
+                paddingLeft: isActive ? '12px' : '14px',
               })}>
               {n.icon}
               {n.label}

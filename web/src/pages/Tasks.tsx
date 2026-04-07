@@ -11,9 +11,9 @@ interface Task {
 }
 
 const statusStyle = (s: string): React.CSSProperties => {
-  if (s === 'active') return { background: 'rgba(99,102,241,0.1)', color: 'var(--accent)', border: '1px solid rgba(99,102,241,0.2)' }
-  if (s === 'paused') return { background: 'var(--warn-dim)', color: 'var(--warn)', border: '1px solid rgba(255,179,0,0.2)' }
-  return { background: 'var(--critical-dim)', color: 'var(--critical)', border: '1px solid rgba(255,59,92,0.2)' }
+  if (s === 'active') return { background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--accent-glow)' }
+  if (s === 'paused') return { background: 'var(--warn-dim)', color: 'var(--warn)', border: '1px solid rgba(255,179,0,0.25)' }
+  return { background: 'var(--critical-dim)', color: 'var(--critical)', border: '1px solid rgba(255,59,92,0.25)' }
 }
 
 const statusIcon = (s: string) => {
@@ -31,9 +31,10 @@ const statusIcon = (s: string) => {
 }
 
 const typeStyle = (t: string): React.CSSProperties => {
-  if (t === 'endpoint') return { background: 'rgba(56,189,248,0.1)', color: '#38BDF8', border: '1px solid rgba(56,189,248,0.2)' }
-  if (t === 'command') return { background: 'rgba(167,139,250,0.1)', color: '#A78BFA', border: '1px solid rgba(167,139,250,0.2)' }
-  return { background: 'rgba(251,146,60,0.1)', color: '#FB923C', border: '1px solid rgba(251,146,60,0.2)' }
+  if (t === 'endpoint')  return { background: 'rgba(56,189,248,0.1)',  color: '#38BDF8', border: '1px solid rgba(56,189,248,0.25)' }
+  if (t === 'command')   return { background: 'rgba(167,139,250,0.1)', color: '#A78BFA', border: '1px solid rgba(167,139,250,0.25)' }
+  if (t === 'subdomain') return { background: 'rgba(251,146,60,0.1)',  color: '#FB923C', border: '1px solid rgba(251,146,60,0.25)' }
+  return { background: 'rgba(52,211,153,0.1)', color: 'var(--success)', border: '1px solid var(--success-glow)' }
 }
 
 const inp: React.CSSProperties = {
@@ -347,14 +348,14 @@ export default function Tasks() {
                 <td style={{ padding: '12px 16px', fontSize: 12, color: 'var(--text-muted)' }}>
                   {t.last_check_at ? new Date(t.last_check_at).toLocaleString() : '—'}
                 </td>
-                <td style={{ padding: '12px 16px' }}>
-                  <div style={{ display: 'flex', gap: 6 }}>
+                <td style={{ padding: '10px 16px' }}>
+                  <div style={{ display: 'flex', gap: 5 }}>
                     {t.status === 'active'
-                      ? <button onClick={() => action(t.id, 'pause')} style={{ padding: '4px 10px', background: 'var(--warn-dim)', color: 'var(--warn)', border: '1px solid rgba(255,179,0,0.2)', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-body)' }}>Pause</button>
-                      : <button onClick={() => action(t.id, 'resume')} style={{ padding: '4px 10px', background: 'rgba(99,102,241,0.08)', color: 'var(--accent)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-body)' }}>Resume</button>
+                      ? <button onClick={() => action(t.id, 'pause')} style={{ padding: '4px 11px', background: 'var(--warn-dim)', color: 'var(--warn)', border: '1px solid rgba(255,179,0,0.25)', borderRadius: 6, cursor: 'pointer', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-body)', transition: 'all 0.15s' }}>Pause</button>
+                      : <button onClick={() => action(t.id, 'resume')} style={{ padding: '4px 11px', background: 'var(--accent-dim)', color: 'var(--accent)', border: '1px solid var(--accent-glow)', borderRadius: 6, cursor: 'pointer', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-body)', transition: 'all 0.15s' }}>Resume</button>
                     }
-                    <button onClick={() => action(t.id, 'run')} style={{ padding: '4px 10px', background: 'rgba(56,189,248,0.08)', color: '#38BDF8', border: '1px solid rgba(56,189,248,0.2)', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-body)' }}>▶ Run</button>
-                    <button onClick={() => del(t.id)} style={{ padding: '4px 10px', background: 'var(--critical-dim)', color: 'var(--critical)', border: '1px solid rgba(255,59,92,0.2)', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-body)' }}>Del</button>
+                    <button onClick={() => action(t.id, 'run')} style={{ padding: '4px 11px', background: 'var(--success-dim)', color: 'var(--success)', border: '1px solid var(--success-glow)', borderRadius: 6, cursor: 'pointer', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-body)', transition: 'all 0.15s' }}>▶ Run</button>
+                    <button onClick={() => del(t.id)} style={{ padding: '4px 11px', background: 'var(--critical-dim)', color: 'var(--critical)', border: '1px solid rgba(255,59,92,0.25)', borderRadius: 6, cursor: 'pointer', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-body)', transition: 'all 0.15s' }}>✕</button>
                   </div>
                 </td>
               </tr>

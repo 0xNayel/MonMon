@@ -15,9 +15,9 @@ interface Check {
 }
 
 const statusStyle = (s: string): React.CSSProperties => {
-  if (s === 'success') return { background: 'rgba(99,102,241,0.08)', color: 'var(--accent)', border: '1px solid rgba(99,102,241,0.2)' }
-  if (s === 'changed') return { background: 'var(--warn-dim)', color: 'var(--warn)', border: '1px solid rgba(255,179,0,0.2)' }
-  return { background: 'var(--critical-dim)', color: 'var(--critical)', border: '1px solid rgba(255,59,92,0.2)' }
+  if (s === 'success') return { background: 'var(--success-dim)', color: 'var(--success)', border: '1px solid var(--success-glow)' }
+  if (s === 'changed') return { background: 'var(--warn-dim)', color: 'var(--warn)', border: '1px solid rgba(255,179,0,0.25)' }
+  return { background: 'var(--critical-dim)', color: 'var(--critical)', border: '1px solid rgba(255,59,92,0.25)' }
 }
 
 const statusIcon = (s: string) => {
