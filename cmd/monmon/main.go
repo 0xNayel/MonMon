@@ -130,8 +130,7 @@ func main() {
 	addBbscopeCmd.Flags().StringP("username", "u", "", "username (h1)")
 	addBbscopeCmd.Flags().StringP("email", "E", "", "email (bc, ywh)")
 	addBbscopeCmd.Flags().StringP("password", "P", "", "password (bc, ywh)")
-	addBbscopeCmd.Flags().String("otp-command", "", "OTP command (bc, ywh)")
-	addBbscopeCmd.Flags().String("categories", "", "categories filter (it, ywh)")
+	addBbscopeCmd.Flags().String("otp-secret", "", "TOTP secret base32 (bc, ywh)")
 	addBbscopeCmd.Flags().BoolP("bounty-only", "b", false, "bounty-only programs")
 	addBbscopeCmd.Flags().StringP("output-type", "o", "tc", "output type (default: tc)")
 
@@ -402,8 +401,7 @@ func runTaskAddBbscope(cmd *cobra.Command, args []string) error {
 	username, _ := cmd.Flags().GetString("username")
 	email, _ := cmd.Flags().GetString("email")
 	password, _ := cmd.Flags().GetString("password")
-	otpCommand, _ := cmd.Flags().GetString("otp-command")
-	categories, _ := cmd.Flags().GetString("categories")
+	otpSecret, _ := cmd.Flags().GetString("otp-secret")
 	bountyOnly, _ := cmd.Flags().GetBool("bounty-only")
 	outputType, _ := cmd.Flags().GetString("output-type")
 
@@ -421,8 +419,7 @@ func runTaskAddBbscope(cmd *cobra.Command, args []string) error {
 		Username:   username,
 		Email:      email,
 		Password:   password,
-		OtpCommand: otpCommand,
-		Categories: categories,
+		OtpSecret: otpSecret,
 		BountyOnly: bountyOnly,
 		OutputType: outputType,
 	}
