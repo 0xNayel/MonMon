@@ -76,7 +76,7 @@ Easy deploy & Easy use
 
 ### Docker Hub (recommended)
 
-Pre-built image with all tools (`subfinder`, `httpx`, `bbscope`, `oathtool`) included.
+Pre-built image with all tools (`subfinder`, `httpx`, `bbscope`) included.
 
 ```bash
 git clone https://github.com/0xNayel/MonMon.git && cd MonMon
@@ -146,12 +146,7 @@ go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 
 # bbscope
-go install github.com/sw33tLie/bbscope@latest
-
-# oathtool (for bbscope OTP) — install via package manager
-# Debian/Ubuntu: apt install oathtool
-# macOS: brew install oath-toolkit
-# Alpine: apk add oath-toolkit-oathtool
+go install github.com/sw33tLie/bbscope/v2@latest
 ```
 
 > Verify tools: open **System** in the dashboard, or check the API at `/api/system/tools`.
@@ -223,9 +218,9 @@ Platforms: `h1` (HackerOne) · `bc` (Bugcrowd) · `it` (Intigriti) · `ywh` (Yes
 | Platform | Auth | Extra flags |
 |----------|------|-------------|
 | `h1` | `-t` token, `-u` username | |
-| `bc` | `-E` email, `-P` password | `--otpcommand` for OTP |
-| `it` | `-t` API token | `-c` categories (url, cidr, mobile, etc.) |
-| `ywh` | `-t` token or `-E`/`-P` email+password | `-O` OTP command, `-c` categories |
+| `bc` | `-t` session cookie or `-E`/`-P` email+password | `-O` TOTP secret (base32) |
+| `it` | `-t` API token | |
+| `ywh` | `-t` token or `-E`/`-P` email+password | `-O` TOTP secret (base32) |
 
 ---
 

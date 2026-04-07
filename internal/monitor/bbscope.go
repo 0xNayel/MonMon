@@ -27,7 +27,7 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 		return nil, fmt.Errorf("platform is required (h1, bc, it, or ywh)")
 	}
 
-	args := []string{cfg.Platform}
+	args := []string{"poll", cfg.Platform}
 
 	switch cfg.Platform {
 	case "h1":
@@ -39,21 +39,26 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 			args = append(args, "-u", cfg.Username)
 		}
 	case "bc":
-		if cfg.Email == "" || cfg.Password == "" {
-			return nil, fmt.Errorf("email and password are required for platform bc")
+		if cfg.Token == "" && (cfg.Email == "" || cfg.Password == "") {
+			return nil, fmt.Errorf("token (-t) or email+password are required for platform bc")
 		}
-		args = append(args, "-E", cfg.Email, "-P", cfg.Password)
-		if cfg.OtpCommand != "" {
-			args = append(args, "--otpcommand", cfg.OtpCommand)
+		if cfg.Token != "" {
+			args = append(args, "-t", cfg.Token)
+		}
+		if cfg.Email != "" {
+			args = append(args, "-E", cfg.Email)
+		}
+		if cfg.Password != "" {
+			args = append(args, "-P", cfg.Password)
+		}
+		if cfg.OtpSecret != "" {
+			args = append(args, "-O", cfg.OtpSecret)
 		}
 	case "it":
 		if cfg.Token == "" {
 			return nil, fmt.Errorf("token (-t) is required for platform it (Intigriti)")
 		}
 		args = append(args, "-t", cfg.Token)
-		if cfg.Categories != "" {
-			args = append(args, "-c", cfg.Categories)
-		}
 	case "ywh":
 		if cfg.Token == "" && (cfg.Email == "" || cfg.Password == "") {
 			return nil, fmt.Errorf("token (-t) or email+password are required for platform ywh (YesWeHack)")
@@ -67,11 +72,8 @@ func (m *BbscopeMonitor) Execute(ctx context.Context, task *models.Task) (*model
 		if cfg.Password != "" {
 			args = append(args, "-P", cfg.Password)
 		}
-		if cfg.OtpCommand != "" {
-			args = append(args, "-O", cfg.OtpCommand)
-		}
-		if cfg.Categories != "" {
-			args = append(args, "-c", cfg.Categories)
+		if cfg.OtpSecret != "" {
+			args = append(args, "-O", cfg.OtpSecret)
 		}
 	default:
 		return nil, fmt.Errorf("unsupported platform %q (supported: h1, bc, it, ywh)", cfg.Platform)

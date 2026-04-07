@@ -153,12 +153,11 @@ type SubdomainConfig struct {
 // BbscopeConfig is the JSON config for bbscope-type tasks.
 type BbscopeConfig struct {
 	Platform   string `json:"platform"`              // "h1" | "bc" | "it" | "ywh"
-	Token      string `json:"token,omitempty"`       // h1/it/ywh: API token
+	Token      string `json:"token,omitempty"`       // h1/it/ywh: API token; bc: _bugcrowd_session cookie
 	Username   string `json:"username,omitempty"`    // h1: username
 	Email      string `json:"email,omitempty"`       // bc/ywh: email
 	Password   string `json:"password,omitempty"`    // bc/ywh: password
-	OtpCommand string `json:"otp_command,omitempty"` // bc/ywh: oathtool command
-	Categories string `json:"categories,omitempty"`  // it/ywh: scope categories
+	OtpSecret  string `json:"otp_secret,omitempty"`  // bc/ywh: TOTP secret (base32)
 	BountyOnly bool   `json:"bounty_only"`           // -b flag
 	OutputType string `json:"output_type"`           // "tc" etc.
 }
